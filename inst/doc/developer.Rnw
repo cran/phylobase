@@ -5,7 +5,8 @@
 \usepackage[utf8]{inputenc} % for UTF-8/single quotes from sQuote()
 \usepackage{graphicx}       % for jpeg and pdf figure support
 \usepackage[usenames,dvipsnames]{color} % loads colors w/ easy names for coloring our links
-\usepackage[colorlinks=true,urlcolor=Blue,linkcolor=BrickRed,bookmarks=true]{hyperref}
+\definecolor{DarkBlue}{rgb}{0,0,0.56}
+\usepackage[colorlinks=true,urlcolor=DarkBlue,linkcolor=BrickRed,bookmarks=true]{hyperref}
 \usepackage{url}
 \usepackage[noae]{Sweave}
 
@@ -25,6 +26,14 @@
 \date{\today}
 
 \begin{document}
+%% inspired by the adephylo vignette
+\DefineVerbatimEnvironment{Sinput}{Verbatim}
+{formatcom={\color{BrickRed}},fontsize=\footnotesize, baselinestretch=0.75}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}
+{formatcom={\color{DarkBlue}},fontsize=\footnotesize, baselinestretch=0.75}
+
+\SweaveOpts{fig=FALSE, eps=FALSE, pdf=TRUE, width=6, height=6}
+
 \maketitle
 
 \tableofcontents
@@ -57,9 +66,67 @@ If you are interested in building \pb from source, you will need the same tools 
 
 We try to follow the coding standards of Bioconductor.\footnote{\url{http://wiki.fhcrc.org/bioc/Coding_Standards}}  Namely, variables and particularily function exposed to users should be in \code{camelCase}.  As of this writing many non-exported functions are prefixed with `.' however, future private functions should be named without this convention.  Indentation should be 4 spaces and tabs should be avoided.  We also use \code{<-} for assignment, and place spaces after commas, in indexes and function calls (e.g. \code{df[2, 2]} and \code{seq(1, 2, 0.1)}, not \code{df[2,2]} or \code{seq(1,2,0.1}.)
 
+\section{Release procedure}
+
+When the package code has stabilized or significant bugs have been fixed we want to push those changes out to CRAN.  This section documents the release sequence used for when submitting the package to CRAN.
+
+\begin{enumerate}
+    \item Update the NEWS file which resides in the pkg/ directory and describes  changes in the package since its last release.  New changes should be appended above the earlier entries and formatted so that it can be read by \code{news(package="phylobase")}, (format documented in \code{?news}).  Briefly, the version header should look like a previous entry and changes should be grouped in categories which start at the beginning of a line.  Within each category individual changes should be marked with an indented (4 spaces) asterisk, with the change text indented and wrapped a further four space, eight total.  The most comprehensive way to find the changes since the last version is to look at the SVN log.  This procedure was followed for the the 0.5 release and assumes that you have the entire project checked out, including the www and tags directories.
+
+Navigate to the tag for the previous release and get the revision it was created:
+\begin{verbatim}
+~$ cd phylobase/tags/phylobase-0.4
+~$ svn log --stop-on-copy
+------------------------------------------------------------------------
+r309 | skembel | 2008-12-18 12:55:14 -0800 (Thu, 18 Dec 2008) | 1 line
+
+Tagging current version as 0.4 prior to hackathon changes
+------------------------------------------------------------------------
+\end{verbatim}
+
+In this case we can see that the tag was created in revision 309 and as this was the current release, we want all the changes that have been made since.  To do that we navigate to the top level to get the change log from any branches that have been made and save the log.  If there are unmerged branches, care should be taken to exclude those changes from the NEWS file.  Because this file may be rather large we'll output it to a file.
+
+\begin{verbatim}
+~$ cd ../..
+~$ svn log -r309:HEAD > RecentChanges.txt
+\end{verbatim}
+
+The NEWS file can then be updated by going through the RecentChanges.txt file and picking out significant changes.
+
+    \item The DESCRIPTION file should be updated to reflect the new version number and current date. Version numbers should follow the 0.5.0 format (no dashes), and the date should be formatted as 2009-01-30.
+    \item Rebuild the vignettes to incorporate the latest changes.  CRAN may not have all the package we use to build our vignettes or able to run latex the multiple time necessary to generate the PDFs with the proper cross references and table of contents.
+
+\begin{verbatim}
+~$ cd phylobase/pkg/inst/doc
+~$ R CMD Sweave phylobase.Rnw
+~$ pdflatex phylobase.tex
+~$ pdflatex phylobase.tex
+~$ pdflatex phylobase.tex
+
+~$ R CMD Sweave developer.Rnw
+~$ pdflatex developer.tex
+~$ pdflatex developer.tex
+~$ pdflatex developer.tex
+
+~$ rm *.toc *.out *.log *.aux *.tex
+\end{verbatim}
+
+    \item Code freeze.  Before the package can be submitted to CRAN it must pass the R-Forge build and check process which happens every night.  The easiest way to handle this is to freeze the the code for a day or two after the NEWS, DESCRIPTION and PDF files have been updated.
+    \item Tag the release in SVN.  Each release is tagged so that a copy of it is easily available if needed at a later date.  This is done using the SVN copy as follows for a hypothetical 0.5.1 release:
+
+\begin{verbatim}
+~$ cd phylobase/
+~$ svn copy pkg/ tags/phylobase-0.5.1
+~$ svn commit -m "tagging version 0.5.1"
+\end{verbatim}
+
+    \item Uploading to CRAN is done by clicking the Upload to CRAN link on the R-Forge package page.  Ensure that the revision number corresponds to the revision with the updated NEWS etc. files.
+    \item Update the R-Forge website with the correct version number and PDFs of the vignettes.
+\end{enumerate}
+
 \section{Unit testing with RUnit}
 
-We are in the process of moving our testing infrastructure to the \code{RUnit}\footnote{\url{http://cran.r-project.org/web/packages/RUnit/index.html}} framework.  New contributions and bug fixes should be accompanied by unit tests which test the basic functionality of the code as well as edge cases (e.g what happens when the function is passed an empty string or negative number -- even when those inputs don't make sense.)  Unit tests are stored in the \code{inst/unitTests/} directory and are named according to the source file they correspond to.  See the included tests and the \code{RUnit} documentation for further details. \code{RUnit} has a few advantages over the other testing frameworks in \code{R}, namely the examples in documentation, vignettes,  
+We are in the process of moving our testing infrastructure to the \code{RUnit}\footnote{\url{http://cran.r-project.org/web/packages/RUnit/index.html}} framework.  New contributions and bug fixes should be accompanied by unit tests which test the basic functionality of the code as well as edge cases (e.g what happens when the function is passed an empty string or negative number -- even when those inputs don't make sense.)  Unit tests are stored in the \code{inst/unitTests/} directory and are named according to the source file they correspond to.  See the included tests and the \code{RUnit} documentation for further details. \code{RUnit} has a few advantages over the other testing frameworks in \code{R}, namely the examples in documentation, vignettes,
 
 \section{Non-exported functions}
 
@@ -93,11 +160,33 @@ These functions are for internal use in \code{phylobase} not exported.  Since mo
 
     \addcontentsline{toc}{subsection}{orderIndex}
     \item[\code{orderIndex}] This function is called from the \code{reorder} method.  It takes a \code{phylo4} or \code{phylo4d} object and a string indicating the desired tree ordering, currently one of ``preorder'' or ``postorder''.  It's value is a vector indicating the respective ordering of the edge matrix from top to bottom (i.e. in postorder the first edge in the edge matrix would terminate in a tip, while in preorder the first edge would be the root edge.
-    
+
 \end{description}
 
 \section{The Nexus Class Library and Rcpp}
 
+\subsection{Organization of the repository}
+We manage NCL source code as a ``Vendor branch'' as described in the ``SVN
+book''. You should refer to this section of the SVN book before upgrading to a
+newer version of NCL.
+
+The original copies of NCL are stored at the root of the repository in the
+folder \code{libncl/}.
+
+When a new version of NCL is released:
+\begin{enumerate}
+  \item the newest tarball should be unpacked in the folder with the appropriate version number;
+  \item this new directory should then be copied over the \code{current/} folder
+    (using \code{svn copy});
+  \item the potential new files should be added with \code{svn add}, and the
+    missing files removed with \code{svn delete}. At this stage, the changes can
+    be commited.
+  \item The new version of NCL can then be tagged.
+  \item The new version of NCL can finally be merged in the \code{pkg/src} directory.
+\end{enumerate}
+
+For more information look at the section ``General Vendor Branch Management'' in
+the SVN book\footnote{\url{http://svnbook.red-bean.com/en/1.5/svn.advanced.vendorbr.html}}.
 
 \section{S4 classes and methods}
 
@@ -141,6 +230,7 @@ Case in point: \code{ape} is not entirely consistent in its internal representat
 The \code{phylobase} subversion repository is organized with four top level directories
 \begin{itemize}
     \item \code{branches/} where changes that will result in large disruption of the package take place
+    \item \code{libncl/} where we keep unaltered source of NCL.
     \item \code{pkg/} where the main trunk of the project exists.  This directory is built and available through the R-Forge install mechanism so it is important that it passes \code{R CMD check}
     \item \code{tags/} where copies of previous \code{phylobase} releases are kept
     \item \code{www/} where the R-Forge webpage for phylobase is maintained.  This must be kept and the top level for R-Forge to find it
@@ -156,7 +246,7 @@ svn checkout \
 svn://svn.r-forge.r-project.org/svnroot/phylobase
 \end{verbatim}
 
-If you would like to make commits directly to the source repository you need to register with R-Forge and be added to the \code{phylobase} project as a developer.  Once you've done this, you’ll need to have the ssh key set up in your R-Forge account.  These terminal commands will make a copy of the folder ``phylobase'', and all the source files for the package, in whatever directory you are in (in this case ``\code{~/Code}''), change ``\code{[name]}'' to your R-Forge username. 
+If you would like to make commits directly to the source repository you need to register with R-Forge and be added to the \code{phylobase} project as a developer.  Once you've done this, you’ll need to have the ssh key set up in your R-Forge account.  These terminal commands will make a copy of the folder ``phylobase'', and all the source files for the package, in whatever directory you are in (in this case ``\code{~/Code}''), change ``\code{[name]}'' to your R-Forge username.
 
 \begin{verbatim}
 cd ~/Code/

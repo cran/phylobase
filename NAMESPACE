@@ -37,7 +37,7 @@ exportMethods(nodeId, nodeType)
 
 # tree data methods
 exportMethods(tdata, "tdata<-", tipData, "tipData<-", nodeData,
-    "nodeData<-", hasTipData, hasNodeData, addData)
+    "nodeData<-", hasTipData, hasNodeData, addData, nData)
 
 # subset methods
 exportMethods(subset, prune, "[")
@@ -48,7 +48,7 @@ exportMethods("[<-", "[[", "[[<-")
 # label methods
 exportMethods(labels, "labels<-", nodeLabels, "nodeLabels<-",
     tipLabels, "tipLabels<-", edgeLabels, "edgeLabels<-",
-    hasNodeLabels, hasEdgeLabels)
+    hasNodeLabels, hasEdgeLabels, hasDuplicatedLabels)
 
 #----------------------------------------------------------------------
 
@@ -60,7 +60,8 @@ export(getNode, ancestor, children, descendants, siblings, ancestors,
     MRCA, shortestPath, getEdge)
 
 # Nexus functions
-export(readNexus, read.nexustreestring)
+export(readNexus)
+export(readNCL)
 
 # pdata functions
 export(pdata, check_pdata)
@@ -79,6 +80,9 @@ export(printphylo4)
 
 # misc objects
 export(phylo4_orderings)
+
+## options
+export(phylobase.options)
 
 ## commented out in source code, probably should be omitted here
 #export(phyloStripchart)

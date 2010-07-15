@@ -1,5 +1,5 @@
 
-R version 2.9.1 (2009-06-26)
+R version 2.10.1 (2009-12-14)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -20,6 +20,15 @@ Type 'q()' to quit R.
 > library(phylobase)
 Loading required package: grid
 Loading required package: ape
+Loading required package: Rcpp
+
+Attaching package: 'phylobase'
+
+
+	The following object(s) are masked from package:ape :
+
+	 edges 
+
 > library(ape)
 > 
 > set.seed(1)
@@ -77,4 +86,4 @@ In asMethod(object) : losing data while coercing phylo4d to phylo
 > 
 > proc.time()
    user  system elapsed 
-  1.700   0.068   1.744 
+  1.352   0.048   1.392 
