@@ -1,5 +1,5 @@
 
-R version 2.9.2 (2009-08-24)
+R version 2.10.1 (2009-12-14)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -18,6 +18,17 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(phylobase)
+Loading required package: grid
+Loading required package: ape
+Loading required package: Rcpp
+
+Attaching package: 'phylobase'
+
+
+	The following object(s) are masked from package:ape :
+
+	 edges 
+
 > require(ape)
 > tree.phylo <- read.tree(text="(((A,B)C,D),E);")  #only one node is labelled
 > tree <- as(tree.phylo, "phylo4")
@@ -65,8 +76,8 @@ C    2
 2     B    2        7          NA       tip
 3     D    3        6          NA       tip
 4     E    4        5          NA       tip
-5          5        0          NA      root
-6          6        5          NA  internal
+5  <NA>    5        0          NA      root
+6  <NA>    6        5          NA  internal
 7     C    7        6          NA  internal
 > print(treed)
   label node ancestor edge.length node.type size
@@ -74,8 +85,11 @@ C    2
 2     B    2        7          NA       tip    2
 3     D    3        6          NA       tip    4
 4     E    4        5          NA       tip    3
-5          5        0          NA      root   NA
-6          6        5          NA  internal   NA
+5  <NA>    5        0          NA      root   NA
+6  <NA>    6        5          NA  internal   NA
 7     C    7        6          NA  internal   NA
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  1.496   0.052   1.540 

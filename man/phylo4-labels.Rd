@@ -4,6 +4,9 @@
 \alias{labels,phylo4-method}
 \alias{labels<-,phylo4,ANY,ANY,character-method}
 \alias{labels<-,phylo4d,ANY,ANY,character-method}
+\alias{hasDuplicatedLabels}
+\alias{hasDuplicatedLabels-methods}
+\alias{hasDuplicatedLabels,phylo4-method}
 \alias{hasNodeLabels}
 \alias{hasNodeLabels-methods}
 \alias{hasNodeLabels,phylo4-method}
@@ -38,6 +41,8 @@
 \S4method{labels}{phylo4}(object, type=c("all", "tip", "internal"))
 \S4method{labels}{phylo4,ANY,ANY,character}(x, type=c("all", "tip",
   "internal"), use.names=FALSE) <- value
+
+\S4method{hasDuplicatedLabels}{phylo4}(x, type=c("all", "tip", "internal"))
 
 \S4method{tipLabels}{phylo4}(x)
 \S4method{tipLabels}{phylo4,character}(x) <- value
@@ -85,6 +90,9 @@
   \describe{
     \item{labels}{\code{signature(object = "phylo4")}: tip and/or
       internal node labels, ordered by node ID}
+
+    \item{hasDuplicatedLabels}{\code{signature(object = "phylo4")}: are
+    any labels duplicated?}
 
     \item{tipLabels}{\code{signature(object = "phylo4")}: tip labels,
       ordered by node ID}

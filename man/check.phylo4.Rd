@@ -8,21 +8,11 @@
 }
 \usage{
 checkPhylo4(object)
-checkTree(object,
-             warn=c("retic","singleton","multiroot"),
-             err=NULL)
+checkTree(object)
 checkPhylo4Data(object)
 }
 \arguments{
   \item{object}{A prospective phylo4 or phylo4d object}
-  \item{warn}{a character vector listing phenomena to warn about:
-    current options are [\code{"poly"} (polytomies),
-    \code{"retic"} (reticulations),
-    \code{"singleton"} ("singleton" nodes, i.e.
-    nodes with a single descendant), \code{"multiroot"}
-    (multiple roots) ]}
-  \item{err}{a character vector listing phenomena to trigger errors:
-    choices as above}
 }
 \value{
   As required by \code{\link[methods]{validObject}}, returns an
@@ -34,11 +24,11 @@ checkPhylo4Data(object)
   functions.
 
   \code{checkPhylo4} is an (inflexible) wrapper for
-  \code{checkTree}, which uses the default settings.
+  \code{checkTree}.
   The rules for \code{phylo4} objects essentially follow
   those for \code{phylo} objects from the \code{ape} package,
   which are in turn defined in
-  http://ape.mpl.ird.fr/misc/FormatTreeR_4Dec2006.pdf.
+  \url{http://ape.mpl.ird.fr/misc/FormatTreeR_28July2008.pdf}.
   These are essentially that:
   \itemize{
     \item if the tree has edge lengths defined, the number of edge
@@ -55,6 +45,9 @@ checkPhylo4Data(object)
     \item tip and node labels must be unique
   }
 
+  You can alter some of the default options by using the function
+  \code{phylobase.options}.
+
   For \code{phylo4d} objects, \code{checkTree} also calls
   \code{checkPhylo4Data} to check the validity of the data associated
   with the tree. It ensures that (1) the data associated with the tree
@@ -66,7 +59,9 @@ checkPhylo4Data(object)
   the \code{\link{phylo4}} constructor and \linkS4class{phylo4} class;
   \code{\link{formatData}},  the \code{\link{phylo4d}} constructor and
   the \linkS4class{phylo4d} class do checks for the data associated with trees.
-  See \code{\link{coerce-methods}} for translation functions.
+  See \code{\link{coerce-methods}} for translation functions and
+  \code{\link{phylobase.options} to change some of the default options
+  of the validator.}
 }
 \author{Ben Bolker, Steven Kembel, Francois Michonneau}
 \keyword{misc}
