@@ -176,6 +176,7 @@ setAs("phylo4", "phylog", function(from, to) {
         stop("the ade4 package is required")
     x <- as(from, "phylo")
     xstring <- write.tree(x, file = "")
+    warning("ade4::phylog objects are deprecated, please use the adephylo package instead")
     newick2phylog(xstring)
 })
 

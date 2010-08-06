@@ -44,7 +44,7 @@
   Translation functions to convert between phylobase objects
   (\code{phylo4} or \code{phylo4d}), and objects used by other
   comparative methods packages in R:  \code{ape} objects (\code{phylo},
-  \code{multiPhylo}), \code{ade4} objects (\code{phylog}), and to
+  \code{multiPhylo}), \code{ade4} objects (\code{phylog}, \emph{now deprecated}), and to
   \code{data.frame} representation.
 }
 
@@ -89,7 +89,10 @@
     \describe{
       
       \item{\code{as(object, "phylog")}}{where object is of class \code{phylo4} and returns an object of class \linkS4class{phylog}.}
-    }} % end phylobase to ade4
+    }
+    Note that this format is now deprecated; the \code{ade4} developers recommend that you use \code{adephylo} instead,
+    which uses \code{phylo} and \code{phylo4} formats natively. 
+} % end phylobase to ade4
     
     \item{}{\code{phylobase} format to \code{data.frame}:
     \describe{

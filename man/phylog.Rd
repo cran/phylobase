@@ -18,7 +18,7 @@ Class \code{\link[ade4]{phylog}}, directly.
 \seealso{The original \code{\link[ade4]{phylog}} from the
   \code{ade4} package. 
 }
-% commented to eliminate Note: on build
-%\examples{
-%}
+\section{Warning}{\code{phylog} objects from \code{ade4} are now deprecated;
+users are encouraged to use the \code{adephylo} package, which uses
+\code{phylo} and \code{phylo4} objects directly.}
 \keyword{classes}
