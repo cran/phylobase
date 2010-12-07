@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include "ncl/nxsmultiformat.h"
 
+//#define NEW_TREE_RETURN_TYPE
+
 NxsString contData(NxsCharactersBlock& charBlock, NxsString& charString, 
 		   const int& eachChar, const int& nTax) {
     for (int taxon=0; taxon < nTax; ++taxon) {
@@ -63,6 +65,8 @@ NxsString stdData(NxsCharactersBlock& charBlock, NxsString& charString, const in
 
 extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
 
+    BEGIN_RCPP
+
     Rcpp::List list(params);
     Rcpp::LogicalVector paramsVec(paramsVecR);
 
@@ -80,9 +84,13 @@ extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
     std::vector<std::string> charLabels;     //labels for the characters
     std::vector<std::string> stateLabels;    //labels for the states
     std::vector<int> nbStates;               //number of states for each character (for Standard datatype)
+    Rcpp::List lTaxaLabelVector = Rcpp::List::create();
+    Rcpp::List lParentVector = Rcpp::List::create();
+    Rcpp::List lBranchLengthVector = Rcpp::List::create();
     std::vector<std::string> trees;          //vector of Newick strings holding the names
     std::vector<std::string> treeNames;      //vector of tree names
     std::vector<std::string> taxaNames;      //vector of taxa names
+    std::string errorMsg;                    //error message
 
     std::vector<bool> test(3);
     test[0] = charall;
@@ -102,8 +110,67 @@ extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
     treesB->SetAllowImplicitNames(true);
     nexusReader.cullIdenticalTaxaBlocks(true);
     /* End of making NCL less strict */
-    
-    nexusReader.ReadFilepath(const_cast < char* > (filename.c_str()), MultiFormatReader::NEXUS_FORMAT);  
+
+    MultiFormatReader::DataFormatType fileFormat =  MultiFormatReader::NEXUS_FORMAT;
+    std::string fileFormatString = list["fileFormat"];
+    if (!fileFormatString.empty())
+        {
+        fileFormat = MultiFormatReader::formatNameToCode(fileFormatString);
+        if (fileFormat == MultiFormatReader::UNSUPPORTED_FORMAT)
+            {
+            std::string m = "Unsupported format \"";
+            m.append(fileFormatString);
+            m.append("\"");
+            Rcpp::List res = Rcpp::List::create(Rcpp::Named("ErrorMsg") = m);
+	        return res;
+            }
+        }
+/* 
+
+fileFormatString should be one of these: 	"nexus",
+								"dnafasta",
+								"aafasta",
+								"rnafasta",
+								"dnaphylip",
+								"rnaphylip",
+								"aaphylip",
+								"discretephylip",
+								"dnaphylipinterleaved",
+								"rnaphylipinterleaved",
+								"aaphylipinterleaved",
+								"discretephylipinterleaved",
+								"dnarelaxedphylip",
+								"rnarelaxedphylip",
+								"aarelaxedphylip",
+								"discreterelaxedphylip",
+								"dnarelaxedphylipinterleaved",
+								"rnarelaxedphylipinterleaved",
+								"aarelaxedphylipinterleaved",
+								"discreterelaxedphylipinterleaved",
+								"dnaaln",
+								"rnaaln",
+								"aaaln",
+								"phyliptree",
+								"relaxedphyliptree",
+								"nexml",
+								"dnafin",
+								"aafin",
+								"rnafin"
+							};
+							*/
+    try {
+	nexusReader.ReadFilepath(const_cast < char* > (filename.c_str()), fileFormat);  
+    }
+    catch (NxsException &x) {
+	errorMsg = x.msg;
+	Rcpp::List res = Rcpp::List::create(Rcpp::Named("ErrorMsg") = errorMsg);
+	return res;
+    }
+    catch (...) {
+	errorMsg = "Unknown error, check the formatting of your file first.";
+	Rcpp::List res = Rcpp::List::create(Rcpp::Named("ErrorMsg") = errorMsg);
+	return res;
+    }
 
     const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
     for (unsigned t = 0; t < nTaxaBlocks; ++t) {
@@ -128,11 +195,74 @@ extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
 		NxsTreesBlock* treeBlock = nexusReader.GetTreesBlock(taxaBlock, i);
 		const unsigned nTrees = treeBlock->GetNumTrees();
 		if (nTrees > 0) {
+		    // lTaxaLabelVector.reserve(nTrees);
+		    // lParentVector.reserve(nTrees);
+		    // lBranchLengthVector.reserve(nTrees);
+
 		    for (unsigned k = 0; k < nTrees; k++) {
-			NxsString ts = treeBlock->GetTreeDescription(k);
+
+			std::vector<std::string> taxonLabelVector; //Index of the parent. 0 means no parent.
+			std::vector<unsigned> parentVector;        //Index of the parent. 0 means no parent.
+			std::vector<double> branchLengthVector;   
+
+			taxonLabelVector.reserve(nTax);
+			parentVector.reserve(2*nTax);
+			branchLengthVector.reserve(2*nTax); 
+
+			taxonLabelVector.clear();
+			parentVector.clear();
+			branchLengthVector.clear();
+                
+			const NxsFullTreeDescription & ftd = treeBlock->GetFullTreeDescription(k); 
+			treeNames.push_back(ftd.GetName());
+			NxsSimpleTree simpleTree(ftd, -1, -1.0);
+			std::vector<const NxsSimpleNode *> ndVector =  simpleTree.GetPreorderTraversal();
+			unsigned internalNdIndex = nTax;
+			for (std::vector<const NxsSimpleNode *>::const_iterator ndIt = ndVector.begin(); ndIt != ndVector.end(); ++ndIt)
+			{
+			    NxsSimpleNode * nd = (NxsSimpleNode *) *ndIt;
+			    unsigned nodeIndex;
+			    if (nd->IsTip())
+			    {
+				nodeIndex = nd->GetTaxonIndex();
+				taxonLabelVector.push_back(taxaNames[nodeIndex]);				
+			    }
+			    else {
+				nodeIndex = internalNdIndex++;
+				nd->SetTaxonIndex(nodeIndex);
+			    }
+			    if (parentVector.size() < nodeIndex + 1)
+			    {
+				parentVector.resize(nodeIndex + 1);
+			    }
+			    if (branchLengthVector.size() < nodeIndex + 1)
+			    {
+				branchLengthVector.resize(nodeIndex + 1);
+			    }
+			    NxsSimpleEdge edge = nd->GetEdgeToParent();
+			    
+			    NxsSimpleNode * par = 0L;
+			    par = (NxsSimpleNode *) edge.GetParent();
+			    if (par != 0L)
+			    {
+				parentVector[nodeIndex] = 1 + par->GetTaxonIndex();
+				branchLengthVector[nodeIndex] = edge.GetDblEdgeLen();
+			    }
+			    else
+			    {
+				parentVector[nodeIndex] = 0;
+				branchLengthVector[nodeIndex] = -1.0;
+			    }
+			}
+
 			NxsString trNm = treeBlock->GetTreeName(k);
-			treeNames.push_back(trNm);
+			treeNames.push_back (trNm);
+			NxsString ts = treeBlock->GetTreeDescription(k);
 			trees.push_back (ts);
+
+			lTaxaLabelVector.push_back (taxonLabelVector);
+			lParentVector.push_back (parentVector);
+			lBranchLengthVector.push_back (branchLengthVector);
 		    }
 		}
 		else {
@@ -227,7 +357,10 @@ extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
     /* Prepare list to return */
     Rcpp::List res = Rcpp::List::create(Rcpp::Named("taxaNames") = taxaNames,
 					Rcpp::Named("treeNames") = treeNames,
-					Rcpp::Named("trees") = trees,
+					Rcpp::Named("taxonLabelVector") = lTaxaLabelVector,
+					Rcpp::Named("parentVector") = lParentVector,
+					Rcpp::Named("branchLengthVector") = lBranchLengthVector,
+					Rcpp::Named("trees") = trees,					
 					Rcpp::Named("dataTypes") = dataTypes,
 					Rcpp::Named("nbCharacters") = nbCharacters,
 					Rcpp::Named("charLabels") = charLabels,
@@ -236,4 +369,7 @@ extern "C" SEXP GetNCL(SEXP params, SEXP paramsVecR) {
 					Rcpp::Named("dataChr") = dataChr,
 					Rcpp::Named("Test") = test);
     return res;				
+
+  END_RCPP
+
 }
