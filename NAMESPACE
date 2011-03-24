@@ -22,7 +22,7 @@ exportMethods(print, head, tail, reorder, plot, summary)
 exportMethods(phylo4, phylo4d)
 
 # counting methods
-exportMethods(nTips, nNodes, nEdges)
+exportMethods(nTips, nNodes, nEdges, depthTips)
 
 # edge methods
 exportMethods(edges, edgeId, hasEdgeLength, edgeLength, "edgeLength<-",
@@ -33,7 +33,10 @@ exportMethods(isRooted, rootNode, "rootNode<-")
 #export(rootEdge)  # no methods defined yet?
 
 # node methods
-exportMethods(nodeId, nodeType)
+exportMethods(nodeId, nodeType, nodeDepth)
+
+# tree properties methods
+exportMethods(isUltrametric)
 
 # tree data methods
 exportMethods(tdata, "tdata<-", tipData, "tipData<-", nodeData,

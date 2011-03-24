@@ -5,6 +5,11 @@ setGeneric("nTips", function(x) {
     standardGeneric("nTips")
 })
 
+## depthTips
+setGeneric("depthTips", function(x) {
+  standardGeneric("depthTips")
+})
+
 ## nNodes
 setGeneric("nNodes", function(x) {
     standardGeneric("nNodes")
@@ -19,6 +24,11 @@ setGeneric("nodeType", function(x) {
 setGeneric("nodeId", function(x, type=c("all", "tip", "internal",
     "root")) {
     standardGeneric("nodeId")
+})
+
+## nodeDepth
+setGeneric("nodeDepth", function(x, node) {
+  standardGeneric("nodeDepth")
 })
 
 ## nEdges
@@ -147,6 +157,12 @@ setGeneric("tail")
 
 ## summary
 setGeneric("summary")
+
+## isUltrametric
+setGeneric("isUltrametric", function(x, tol=.Machine$double.eps^.5) {
+  standardGeneric("isUltrametric")
+})
+
 
 ### ----------- phylo4d methods -----------
 

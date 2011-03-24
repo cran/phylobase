@@ -17,10 +17,20 @@ getNode <- function(x, node, type=c("all", "tip", "internal"),
         node <- nodeId(x, type)
     }
 
+    if (length(node) == 0) {
+      rval <- integer(0)
+      names(rval) <- character(0)
+      return(rval)
+    }
+
     ## match node to tree
     if (is.character(node)) {
-        ndTmp <- paste("^", node, "$", sep="")
-        irval <- lapply(ndTmp, function(ND) grep(ND, labels(x, type)))
+        ndTmp <- paste("^\\Q", node, "\\E$", sep="")
+        irval <- lapply(ndTmp, function(ND) {
+          xx <- grep(ND, labels(x, type), perl=TRUE)
+          if (length(xx) == 0) 0
+          else xx
+        })                                
         irval <- unlist(irval)
     } else if (is.numeric(node) && all(floor(node) == node, na.rm=TRUE)) {
         irval <- match(as.character(node), names(labels(x, type)))
@@ -31,7 +41,11 @@ getNode <- function(x, node, type=c("all", "tip", "internal"),
     ## node numbers
     rval <- names(labels(x, type))[irval]
 
-    rval[node == 0]   <- NA # root ancestor gets special treatment
+    ## root ancestor gets special treatment
+    isRoot <- ifelse(length(node) > 0,
+                     sapply(node, function(nd) identical(nd, 0)),
+                     logical(0))
+    rval[isRoot] <- NA
     rval[is.na(node)] <- NA # return NA for any NA_character_ inputs
     rval <- as.integer(rval)
 
@@ -148,6 +162,10 @@ ancestors <- function (phy, node, type=c("all","parent","ALL")) {
     isValid <- !is.na(node)
     node <- as.integer(node[isValid])
 
+    if (length(node) == 0) {
+      return(NA)
+    }
+    
     if (type == "parent") {
         res <- lapply(node, function(x) ancestor(phy, x))
     } else {
@@ -229,14 +247,18 @@ MRCA <- function(phy, ...) {
 # shortestPath
 ###############
 shortestPath <- function(phy, node1, node2){
-    ## if(!require(phylobase)) stop("phylobase package is not installed")
+  ## if(!require(phylobase)) stop("phylobase package is not installed")
 
-    ## conversion from phylo, phylo4 and phylo4d
+  ## conversion from phylo, phylo4 and phylo4d
+  if (class(phy) == "phylo4d") {
+    x <- extractTree(phy)
+  }
+  else if (class(phy) != "phylo4"){
     x <- as(phy, "phylo4")
-    ## FIXME: use extractTree if coming from phylo4d
+  }
 
     ## some checks
-    if (is.character(checkval <- checkPhylo4(x))) stop(checkval)
+    ## if (is.character(checkval <- checkPhylo4(x))) stop(checkval) # no need
     t1 <- getNode(x, node1)
     t2 <- getNode(x, node2)
     if(any(is.na(c(t1,t2)))) stop("wrong node specified")
