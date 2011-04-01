@@ -7,12 +7,19 @@
 \alias{nTips-methods}
 \alias{nTips,phylo4-method}
 \alias{nTips,phylo-method}
+\alias{depthTips}
+\alias{depthTips-methods}
+\alias{depthTips,phylo4-method}
+\alias{depthTips,phylo4d-method}
 \alias{edges}
 \alias{edges-methods}
 \alias{edges,phylo4-method}
 \alias{nEdges}
 \alias{nEdges-methods}
 \alias{nEdges,phylo4-method}
+\alias{nodeDepth}
+\alias{nodeDepth-methods}
+\alias{nodeDepth,phylo4-method}
 \alias{edgeOrder}
 \alias{edgeOrder,phylo4-method}
 \alias{hasEdgeLength}
@@ -37,6 +44,9 @@
 \alias{rootNode,phylo4-method}
 \alias{rootNode<-}
 \alias{rootNode<-,phylo4-method}
+\alias{isUltrametric}
+\alias{isUltrametric-methods}
+\alias{isUltrametric,phylo4-method}
 \title{Methods for S4 phylogeny classes}
 \description{
    Generic methods for phylogenetic trees represented as S4 classes
@@ -44,6 +54,9 @@
 \section{Methods}{
 \describe{
   \item{nTips}{\code{signature(object="phylo4")}: number of tips}
+
+  \item{depthTips}{\code{signature(object="phylo4")}: distance between
+  the tips and the root}
   
   \item{nNodes}{\code{signature(object="phylo4")}: number of internal nodes}
   
@@ -65,11 +78,17 @@
     which has the type of node (internal, tip, root) for value, and the
     node number for name}
 
+  \item{nodeDepth}{\code{signature(object = "phylo4")}: named vector
+    which gives the distance between nodes and the root}
+
   \item{isRooted}{\code{signature(object = "phylo4")}: whether tree is
     rooted (i.e. has explicit root edge defined \emph{or} root node has
     <= 2 descendants)}
   
   \item{rootEdge}{\code{signature(object = "phylo4")}: root edge}
+
+  \item{isUltrametric}{\code{signature(object = "phylo4")}: whether
+    the tree is ultrametric}
   }
 }
 
@@ -78,6 +97,7 @@
 % https://stat.ethz.ch/pipermail/r-devel/2008-May/049653.html
 \S4method{nNodes}{phylo4}(x)
 \S4method{nTips}{phylo4}(x)
+\S4method{depthTips}{phylo4}(x)
 \S4method{edges}{phylo4}(x, drop.root=FALSE, \dots)
 \S4method{nEdges}{phylo4}(x)
 \S4method{edgeOrder}{phylo4}(x, \dots)
@@ -85,28 +105,32 @@
 \S4method{edgeLength}{phylo4}(x, node)
 \S4method{edgeLength}{phylo4}(x, use.names=TRUE) <- value
 \S4method{nodeType}{phylo4}(x)
+\S4method{nodeDepth}{phylo4}(x, node)
 \S4method{isRooted}{phylo4}(x)
 \S4method{rootEdge}{phylo4}(x)
 \S4method{rootNode}{phylo4}(x)
 \S4method{rootNode}{phylo4}(x) <- value
+\S4method{isUltrametric}{phylo4}(x, tol=.Machine$double.eps^0.5)
 }
 
 \arguments{
   \item{x}{a phylo4/phylo4d object}
-  \item{node}{which edge lengths to extract (indexed by descendant
+  \item{node}{which edge to extract (indexed by descendant
     node)} 
   \item{value}{a vector of edge lengths or a node number}
   \item{use.names}{Should the names of \code{value} be used to match
   edge lengths provided? }
   \item{drop.root}{logical: drop root row from edge matrix?}
+  \item{tol}{tolerance in rounding error to determine whether the tree
+    is ultrametric}
   \item{\dots}{additional parameters passed (currently ignored)}
 }
 
 \examples{
 data(geospiza)
-edgeLength(geospiza,5)
-edgeLength(geospiza,"olivacea")
-edgeLength(geospiza,5:7)
+edgeLength(geospiza, 5)
+edgeLength(geospiza, "olivacea")
+edgeLength(geospiza, 5:7)
 }
 
 \keyword{methods}
