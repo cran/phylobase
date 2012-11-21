@@ -1,9 +1,9 @@
 Package: phylobase
 Type: Package
 Title: Base package for phylogenetic structures and comparative data
-Version: 0.6.4
-Date: 2012-11-09
-Depends: methods, grid, ape(>= 2.1), Rcpp (>= 0.9)
+Version: 0.6.5
+Date: 2012-11-21
+Depends: methods, grid, ape(>= 2.1), Rcpp (>= 0.10.0)
 Imports: ade4
 LinkingTo: Rcpp
 Suggests: MASS, RUnit
@@ -24,9 +24,6 @@ Collate: 'phylo4.R' 'checkdata.R' 'formatData.R' 'class-multiphylo4.R'
         'prune.R' 'treePlot.R' 'treestruc.R' 'treewalk.R' 'readNCL.R'
         'tbind.R' 'zzz.R'
 URL: http://phylobase.R-forge.R-project.org
+Packaged: 2012-11-24 18:02:17 UTC; bolker
 Repository: CRAN
-Repository/R-Forge/Project: phylobase
-Repository/R-Forge/Revision: 835
-Repository/R-Forge/DateTimeStamp: 2012-11-19 14:46:09
-Date/Publication: 2012-11-20 07:13:47
-Packaged: 2012-11-19 15:21:13 UTC; rforge
+Date/Publication: 2012-11-25 15:59:59

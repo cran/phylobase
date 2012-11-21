@@ -1,0 +1,22 @@
+RUNIT TEST PROTOCOL -- Mon Dec  6 13:20:26 2010 
+*********************************************** 
+Number of test functions: 97 
+Number of errors: 0 
+Number of failures: 4 
+
+ 
+1 Test Suite : 
+phylobase unit testing - 97 test functions, 0 errors, 4 failures
+FAILURE in test.phylo4.As.phylo: Error in checkEquals(suppressWarnings(as(phy, "phylo")), tr) : 
+  Names: 2 string mismatches
+Component 2: Numeric: lengths (8, 1) differ
+Component 4: Numeric: lengths (1, 8) differ
+FAILURE in test.phylo4d.As.phylo: Error in checkEquals(as(phyd, "phylo"), tr) : Names: 2 string mismatches
+Component 2: Numeric: lengths (8, 1) differ
+Component 4: Numeric: lengths (1, 8) differ
+FAILURE in test.phylo.As.phylo4: Error in checkEquals(tr, as(phy, "phylo")) : Names: 2 string mismatches
+Component 2: Numeric: lengths (1, 8) differ
+Component 4: Numeric: lengths (8, 1) differ
+FAILURE in test.phylo.As.phylo4d: Error in checkEquals(tr, as(phyd, "phylo")) : Names: 2 string mismatches
+Component 2: Numeric: lengths (1, 8) differ
+Component 4: Numeric: lengths (8, 1) differ
