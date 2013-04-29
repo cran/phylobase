@@ -1,4 +1,4 @@
-a9de94e6d46f007d0f812b708f1df96f *DESCRIPTION
+5aea50516f86333bd2c8c297c9ad5867 *DESCRIPTION
 1f1a6145cffb325ebc25212fc98dda08 *NAMESPACE
 4c737ec8d56118e1b7fdfcf81cea1658 *NEWS
 fc2dc67cd12f0fa2152d2b0a4e78a445 *R/checkdata.R
@@ -17,7 +17,7 @@ a5ed29295d08b71d41c3f7b4004f469f *R/phylo4.R
 81038dfbe732ec6615e9b4a8757cb5c7 *R/phylobase.options.R
 919178c29c6f2774e7aef61ce8ec32c1 *R/prune.R
 0b69a76acfd500036d044ac3cde33c63 *R/readNCL.R
-b0072934737aa148e08d56d2a62416b6 *R/setAs-Methods.R
+25ecfe10ec0bd001614b895510ec9715 *R/setAs-Methods.R
 d52de19b321917cedf2f0f4d85b3b849 *R/subset.R
 957d6bb59eea50e691c3411bd7c8a455 *R/tbind.R
 c90e9f67f63d59e619c98fec508e2c9c *R/treePlot.R
@@ -30,14 +30,14 @@ c31da14d64f9037d8cf1783fa6627be5 *cleanup
 8a843dd8cd966030b246f06adee0ac13 *data/geospiza_raw.rda
 26e3cdf5f9480147fd9ef4a3f8b75c3b *data/owls4.rda
 c96b8393e74836b5edecfa0ea100121a *inst/doc/developer.Rnw
-dc307a73254663b5f5a86de6479393dd *inst/doc/developer.pdf
+3ca561e3da2d6ef2d701bfb13487527b *inst/doc/developer.pdf
 0beab0eea1bd99ef8c932c7fc4b25f1e *inst/doc/phylobase.Rnw
-e35c21858cabcedd4c292c75a07a8c2c *inst/doc/phylobase.pdf
+14023bc60e82ed6c3eb8242aa41c00dd *inst/doc/phylobase.pdf
 1fff9fa62be103e818e88abf156ffacb *inst/nexusfiles/ExContData.Rdata
 c05860e96ba5feab12b1269f43a43f1b *inst/nexusfiles/MultiLineTrees.nex
 fb2ae9b4cc08ab2d0959508a55c83633 *inst/nexusfiles/badnex.nex
 f8225a526530eabfaa8ea117e2a82aae *inst/nexusfiles/co1.nex
-6a3ac94f10b8ce03cab3410b7778034b *inst/nexusfiles/multiLines.Rdata
+5f0f9c95e0d4597b1ece4f86d355d46f *inst/nexusfiles/multiLines.Rdata
 4d5d4d71cf83b54eed9811470482e8d2 *inst/nexusfiles/newick.tre
 51849f725c9b6097be5f2b6453c33844 *inst/nexusfiles/noStateLabels.nex
 8c16a312ee724e2a94aecd5b2c6df0ee *inst/nexusfiles/treeRoundingError.nex
@@ -62,9 +62,8 @@ e74972608b81188995e03adc55c7e79b *inst/unitTests/runit.methods-phylo4.R
 570184710ed31cb9aa49316d9f2046dd *inst/unitTests/runit.phylo4.R
 16a2490f1c8321a19d01103061306f28 *inst/unitTests/runit.phylobase.options.R
 eeb3d78b5a6839a0a374a98668c70075 *inst/unitTests/runit.prune.R
-0579e8e72fe70339718b89c8c23654a1 *inst/unitTests/runit.readNCL.R
-87d7dd9f963ef2b4f1fc9810af0ec6ba *inst/unitTests/runit.readNexus.R
-8e17fc62823dfc3b3567616f434e2430 *inst/unitTests/runit.setAs-Methods.R
+bb7c27cacdce3708654ac9621df90f44 *inst/unitTests/runit.readNCL.R
+17415b523beaabadfd325fd9c28c41bc *inst/unitTests/runit.setAs-Methods.R
 db1cef590d782484f6ab2074e346835f *inst/unitTests/runit.subset.R
 9605f01bf3120a6f159115c891cc0f89 *inst/unitTests/runit.tbind.R
 f7f95bc1c3d4da9d00ee212c2622249a *inst/unitTests/runit.treePlot.R
@@ -115,7 +114,7 @@ b7d0031ee5f5a34fd35a622ec6f39267 *man/tip.data.plot.Rd
 b06c8e98609078f1734f5c5b0614ca43 *src/descendants.c
 87210b76102c11d0a2890f10494bf75c *src/ncl/ncl.h
 693c38f98d7c4292b1c02b5903e67ea6 *src/ncl/nxsallocatematrix.h
-0c8cff37efbe6dc4eae09c799b340af2 *src/ncl/nxsassumptionsblock.h
+18810e4eb35360b4d29e339455031321 *src/ncl/nxsassumptionsblock.h
 44f64b8ad1dae0551e55f5dd52842bbf *src/ncl/nxsblock.h
 994ff5c8246edc19238b40a1cf699098 *src/ncl/nxscdiscretematrix.h
 f60aba75068b42972f5caf91e7f8f777 *src/ncl/nxscharactersblock.h
@@ -160,6 +159,7 @@ dc5efccf4d370c4c7b0801bcbfd74a9b *src/reorderBinary.c
 1944dc3ac77930043bb7ccb02f3718cd *src/reorderRobust.c
 7e791632cd72a0dab72b6b1059b85273 *tests/RUnit-tests.R
 a67b9929314fa041d57a5348cef2f9e5 *tests/RUnit-tests.Rout.save
+b39d11a0e1f596b5aa7cea6ee70a61a3 *tests/Rplots.pdf
 d1a69ad605ccbb56f978f3d0af0fa49a *tests/dUnit.Rout.save
 28f06504613e7585f2a63ccb43db0bf0 *tests/doRUnit.R
 c17d725e1524c77928d34d081261a4b6 *tests/makeNewOut
@@ -172,7 +172,8 @@ f8c9e1533736d8d4c2222be81d07efb9 *tests/phylo4dtests.R
 b5ca56b2fb65267bf3d03dd42c3fd06d *tests/phylosubtest.R
 7e00dfb117e69b3e76be609922580c7f *tests/phylosubtest.Rout.save
 d1a277d8fe278cc1782b72838be6f8eb *tests/phylotorture.R
-790c150682738cc7901cb232b9305040 *tests/phylotorture.Rout.save
+d14ddf7b743cdad00e7025b65e0b4962 *tests/phylotorture.Rout
+d14ddf7b743cdad00e7025b65e0b4962 *tests/phylotorture.Rout.save
 035b205fc3ff55a2f7f4ef6cfa092d98 *tests/plottest.R
 2a7db64945db71677b6e81d9bc0a8056 *tests/plottest.Rout.save
 39c9069ce81688327a003ac73302c1fc *tests/roundtrip.R
