@@ -1,4 +1,48 @@
 ## REQUIRED for all trees
+
+
+#' Validity checking for phylo4 objects
+#' 
+#' Basic checks on the validity of S4 phylogenetic objects
+#' 
+#' 
+#' @aliases checkPhylo4 checkTree checkPhylo4Data
+#' @param object A prospective phylo4 or phylo4d object
+#' @return As required by \code{\link[methods]{validObject}}, returns an error
+#' string (describing problems) or TRUE if everything is OK.
+#' @note
+#' 
+#' These functions are only intended to be called by other phylobase functions.
+#' 
+#' \code{checkPhylo4} is an (inflexible) wrapper for \code{checkTree}.  The
+#' rules for \code{phylo4} objects essentially follow those for \code{phylo}
+#' objects from the \code{ape} package, which are in turn defined in
+#' \url{http://ape.mpl.ird.fr/misc/FormatTreeR_28July2008.pdf}.  These are
+#' essentially that: \itemize{ \item if the tree has edge lengths defined, the
+#' number of edge lengths must match the number of edges; \item the number of
+#' tip labels must match the number of tips; \item in a tree with \code{ntips}
+#' tips and \code{nnodes} (total) nodes, nodes 1 to \code{ntips} must be tips
+#' \item if the tree is rooted, the root must be node number \code{ntips+1} and
+#' the root node must be the first row of the edge matrix \item tip labels,
+#' node labels, edge labels, edge lengths must have proper internal names (i.e.
+#' internal names that match the node numbers they document) \item tip and node
+#' labels must be unique }
+#' 
+#' You can alter some of the default options by using the function
+#' \code{phylobase.options}.
+#' 
+#' For \code{phylo4d} objects, \code{checkTree} also calls
+#' \code{checkPhylo4Data} to check the validity of the data associated with the
+#' tree. It ensures that (1) the data associated with the tree have the correct
+#' dimensions, (2) that the row names for the data are correct.
+#' @author Ben Bolker, Steven Kembel, Francois Michonneau
+#' @seealso the \code{\link{phylo4}} constructor and \linkS4class{phylo4}
+#' class; \code{\link{formatData}}, the \code{\link{phylo4d}} constructor and
+#' the \linkS4class{phylo4d} class do checks for the data associated with
+#' trees.  See \code{\link{coerce-methods}} for translation functions and
+#' \code{\link{phylobase.options} to change some of the default options of the
+#' validator.}
+#' @keywords misc
 checkPhylo4 <- function(object) {
     ct <- checkTree(object)
 
@@ -10,6 +54,79 @@ checkPhylo4 <- function(object) {
 }
 
 checkTree <- function(object) {
+    
+    ## case of empty phylo4 object
+    if(nrow(object@edge) == 0 && length(object@edge.length) == 0 &&
+       length(object@label) == 0 && length(object@edge.label) == 0)
+        return(TRUE)
+
+    ## get options
+    opt <- phylobase.options()
+
+    ## Storage of error/warning messages
+    err <- wrn <- character(0)
+
+    ## Matrix is integer
+    if (!is.integer(object@edge)) {
+        err <- c(err, "Edge matrix needs to be integer.")
+    }
+
+    ## Matrix doesn't have NAs
+    if (any(is.na(object@edge))) {
+        err <- c(err, "Edge matrix cannot have NAs at this time.",
+                 "This could only happen if singletons were allowed",
+                 "but this is not supported by phylobase yet.")
+    }
+
+    ## Having non-integer or NAs cause cryptic messages, so stop here
+    ##  if it's the case
+    if (length(err)) return(err)
+
+    ## Named slots
+    if (is.null(attributes(object@label)$names)) {
+        err <- c(err, "The label slot needs to be a named vector.")
+        attributes(object@label) <- list(names=character(0))
+    }
+    if (is.null(attributes(object@edge.length)$names)) {
+        err <- c(err, "The edge.length slot needs to be a named vector.")
+        attributes(object@edge.length) <- list(names=character(0))
+    }
+    if (is.null(attributes(object@edge.label)$names)) {
+        err <- c(err, "The edge.label slot needs to be a named vector.")
+        attributes(object@edge.label) <- list(names=character(0))
+    }
+    
+    res <- checkTreeCpp(object, opts=opt)
+
+    if (hasEdgeLength(object) && any(is.na(edgeLength(object)))) {
+        naElen <- names(which(is.na(object@edge.length)))
+        if (! identical(naElen, edgeId(object, "root")))
+            err <- c(err, "Only the root can have NA as edge length. ")
+    }
+
+    if (!object@order %in% phylo4_orderings) {
+      err <- c(err, paste("unknown order: allowed values are",
+               paste(phylo4_orderings,collapse=",")))
+    }
+    
+    err <- ifelse(nzchar(res[[1]]), c(err, res[[1]]), err)
+    wrn <- ifelse(nzchar(res[[2]]), c(wrn, res[[2]]), wrn)
+
+    if (!is.na(wrn)) {
+        wrn <- paste(wrn, collapse=", ")
+        warning(wrn)
+    }
+    if (!is.na(err)) {
+        err <- paste(err, collapse=", ")
+        return(err) #failures are returned as text
+    }
+    else {
+        return(TRUE)
+    }
+    
+}
+
+checkTreeOld <- function(object) {
 
     ## case of empty phylo4 object
     if(nrow(object@edge) == 0 && length(object@edge.length) == 0 &&
@@ -29,18 +146,17 @@ checkTree <- function(object) {
     tips <- unique(sort(E[,2][!E[,2] %in% E[,1]]))
     nodes <- unique(sort(c(E)))
     intnodes <- nodes[!nodes %in% tips]
-    roots <- E[which(is.na(E[,1])),2]
-    nRoots <- length(roots)
+    nRoots <- length(which(E[,1] == 0))
 
     ## Check edge lengths
     if (hasEdgeLength(object)) {
         if (length(object@edge.length) != nedges)
             err <- c(err, "edge lengths do not match number of edges")
-        if(!is.numeric(object@edge.length))
-            err <- c(err, "edge lengths are not numeric")
+        ##if(!is.numeric(object@edge.length)) # not needed
+        ##  err <- c(err, "edge lengths are not numeric")
         ## presumably we shouldn't allow NAs mixed
         ## with numeric branch lengths except at the root
-        if (sum(is.na(object@edge.length)) > 1)
+        if (sum(is.na(object@edge.length)) > (nRoots + 1))
             err <- c(err, "NAs in edge lengths")
         ## Strip root edge branch length (if set to NA)
         if (any(object@edge.length[!is.na(object@edge.length)] < 0))
