@@ -59,7 +59,7 @@ test_that("depthTips works when there are no edge lengths", {
     expect_true(is.null(depthTips(tmpPhy)))
 })
 
-test_that("nTips works on ape objects",          
+test_that("nTips works on ape objects",
           ## nTips phylo
           expect_equal(nTips(tr), 5))
 
@@ -84,7 +84,7 @@ test_that("nodeId works with argument all",
           expect_identical(nodeId(phy.alt, "all"), c(nid.tip, nid.int)))
 test_that("nodeId works with argument tip",
           expect_identical(nodeId(phy.alt, "tip"), nid.tip))
-test_that("nodeId works with argument internal", 
+test_that("nodeId works with argument internal",
           expect_identical(nodeId(phy.alt, "internal"), nid.int))
 test_that("nodeId works woth argument root",
           expect_identical(nodeId(phy.alt, "root"), nid.int[1]))
@@ -101,7 +101,7 @@ test_that("nodeDepth works with numeric argument", {
     expect_equal(nodeDepth(phy.alt, 1), allDepths[1])
 })
 
-test_that("nodeDepth works with character argument", {          
+test_that("nodeDepth works with character argument", {
     expect_equal(nodeDepth(phy.alt, "t1"), allDepths[1])
 })
 
@@ -110,6 +110,90 @@ test_that("nodeDepth works with no branch length", {
     edgeLength(tmpPhy) <- NA
     expect_true(is.null(nodeDepth(tmpPhy)))
 })
+
+############################################################################
+## nodeHeight                                                             ##
+############################################################################
+
+context("nodeHeight")
+
+tmp_nd_hgt_tree <- tempfile()
+cat("(((A:1,B:1):2,(C:1,D:1):2):4,((E:10,F:1):2,(G:3,H:7):2):4);",
+    file = tmp_nd_hgt_tree)
+nd_hgt_tree <- readNewick(file = tmp_nd_hgt_tree)
+unlink(tmp_nd_hgt_tree)
+
+test_that("nodeHeight with 1 node", {
+              expect_equal(nodeHeight(nd_hgt_tree, MRCA(nd_hgt_tree, c("A", "D")), "all_tip"),
+                           setNames(c(3, 3, 3, 3), c("A", "B", "C", "D")))
+              expect_equal(nodeHeight(nd_hgt_tree, MRCA(nd_hgt_tree, c("E", "H")), "min_tip"),
+                           c("F" = 3))
+              expect_equal(nodeHeight(nd_hgt_tree, MRCA(nd_hgt_tree, c("E", "H")), "max_tip"),
+                           c("E" = 12))
+              expect_equal(nodeHeight(nd_hgt_tree, MRCA(nd_hgt_tree, c("A", "D")), "root"),
+                           4)
+          })
+
+test_that("nodeHeight with several nodes", {
+              expect_equal(nodeHeight(nd_hgt_tree, c(
+                  MRCA(nd_hgt_tree, c("A", "D")),
+                  MRCA(nd_hgt_tree, c("A", "B"))),
+                                      "all_tip"),
+                           list("10" = setNames(c(3, 3, 3, 3), c("A", "B", "C", "D")),
+                                "11" = c("A" = 1, "B" = 1)))
+
+              expect_equal(nodeHeight(nd_hgt_tree, c(
+                  MRCA(nd_hgt_tree, c("E", "H")),
+                  MRCA(nd_hgt_tree, c("E", "F"))),
+                                      "min_tip"),
+                           list("13" = c("F" = 3),
+                                "14" = c("F" = 1)))
+
+              expect_equal(nodeHeight(nd_hgt_tree, c(
+                  MRCA(nd_hgt_tree, c("E", "H")),
+                  MRCA(nd_hgt_tree, c("E", "F"))), "max_tip"),
+                           list("13" = c("E" = 12),
+                                "14" = c("E" = 10)))
+
+              expect_equal(nodeHeight(nd_hgt_tree, c(
+                  MRCA(nd_hgt_tree, c("A", "D")),
+                  MRCA(nd_hgt_tree, c("E", "F"))),
+                                      "root"),
+                           c("10" = 4, "14" = 6))
+          })
+
+
+test_that("nodeHeight for tips", {
+              res <- as.list(rep(0, nTips(nd_hgt_tree)))
+              for (i in seq_len(nTips(nd_hgt_tree))) names(res[[i]]) <- LETTERS[i]
+              names(res) <- seq_len(nTips(nd_hgt_tree))
+
+              expect_equal(nodeHeight(nd_hgt_tree, nodeId(nd_hgt_tree, "tip"), "all_tip"),
+                           res)
+              expect_equal(nodeHeight(nd_hgt_tree, nodeId(nd_hgt_tree, "tip"), "min_tip"),
+                           res)
+              expect_equal(nodeHeight(nd_hgt_tree, nodeId(nd_hgt_tree, "tip"), "max_tip"),
+                           res)
+          })
+
+test_that("nodeHeight for mix of tips and internal nodes", {
+              expect_equal(nodeHeight(nd_hgt_tree, c(1, 10), "all_tip"),
+                           list("1" = c("A" = 0),
+                                "10" = c("A" = 3, "B" = 3, "C" = 3, "D" = 3)))
+              expect_equal(nodeHeight(nd_hgt_tree, c(1, 14), "min_tip"),
+                           list("1" = c("A" = 0),
+                                "14" = c("F" = 1)))
+              expect_equal(nodeHeight(nd_hgt_tree, c(1, 14), "max_tip"),
+                           list("1" = c("A" = 0),
+                                "14" = c("E" = 10)))
+              expect_equal(nodeHeight(nd_hgt_tree, c(5, 14), "root"),
+                           c("5" = 16, "14" = 6))
+          })
+
+
+############################################################################
+## edges                                                                  ##
+############################################################################
 
 context("edges")
 test_that("edges works",  expect_identical(edges(phy.alt), edge))
@@ -148,9 +232,9 @@ test_that("hasEdgeLength works when no edge lengths are present", {
 context("edgeLength")
 test_that("default works (all edge lengths)",
           expect_identical(edgeLength(phy.alt), setNames(elen, eid)))
-test_that("one edge length, by label", 
+test_that("one edge length, by label",
     expect_equal(edgeLength(phy.alt, "t1"), c(`7-1`=0.1)))
-test_that("one edge length, by node ID", 
+test_that("one edge length, by node ID",
           expect_equal(edgeLength(phy.alt, 1), c(`7-1`=0.1)))
 test_that("non-existent edge, by label", {
     ans <- structure(NA_real_, .Names = NA_character_)
@@ -244,14 +328,14 @@ test_that("isRooted works as expected",
 
 context("rootNode")
 test_that("rootNode works as expected",
-          expect_identical(rootNode(phy.alt), nid.int[1]))
+          expect_identical(rootNode(phy.alt), getNode(phy, nid.int[1])))
 
 context("rootNode <-")
 test_that("rootNode <- is not yet implemented",
           expect_error(rootNode(phy.alt) <- 7))
 
 context("labels")
-test_that("labels works as expected with no argument", 
+test_that("labels works as expected with no argument",
   expect_identical(labels(phy.alt),
                    setNames(c(lab.tip, lab.int), c(nid.tip, nid.int))))
 test_that("labels works as expected with argument all",
@@ -360,7 +444,7 @@ test_that("error to add labels for nodes that don't exist", {
 })
 
 context("nodeLabels")
-test_that("nodeLabels works as expected", 
+test_that("nodeLabels works as expected",
           expect_identical(nodeLabels(phy.alt), setNames(lab.int, nid.int)))
 
 context("hasNodeLabels")
@@ -394,6 +478,10 @@ test_that("duplicated labels work as expected", {
     phylobase.options(allow.duplicated.labels="ok")
     nodeLabels(phy.alt)["6"] <- "n7"
     expect_identical(nodeLabels(phy.alt), setNames(c("n7", "n7", "n8", "n9"), nid.int))
+    expect_true(hasDuplicatedLabels(phy.alt))
+    ## NAs are not considered duplicated
+    nodeLabels(phy.alt)[1:2] <- NA
+    expect_true(!hasDuplicatedLabels(phy.alt))
     phylobase.options(op)
     ## error to add labels for nodes that don't exist
     expect_error(nodeLabels(phy.alt)["fake"] <- "xxx")
@@ -401,7 +489,7 @@ test_that("duplicated labels work as expected", {
 })
 
 context("tipLabels")
-test_that("tipLabels works as expected", 
+test_that("tipLabels works as expected",
           expect_identical(tipLabels(phy.alt), setNames(lab.tip, nid.tip)))
 
 context("tipLabels <-")
@@ -427,6 +515,9 @@ test_that("duplicated labels works as expected on tips", {
     phylobase.options(allow.duplicated.labels="ok")
     tipLabels(phy.alt)[1] <- "t2"
     expect_identical(tipLabels(phy.alt), setNames(c("t2", "t2", "t3", "t4", "t5"), nid.tip))
+    expect_true(hasDuplicatedLabels(phy.alt))
+    tipLabels(phy.alt)[1:2] <- NA
+    expect_true(!hasDuplicatedLabels(phy.alt))
     phylobase.options(op)
 })
 test_that("error to add labels for nodes that don't exist", {
@@ -519,7 +610,7 @@ test_that("summary works as expected when root edge as no length", {
     phy.sum2 <- summary(phy.alt, quiet=TRUE)
     expect_identical(phy.sum2$mean.el, mean(edgeLength(phy.alt), na.rm=TRUE))
     expect_identical(phy.sum2$var.el, var(edgeLength(phy.alt), na.rm=TRUE))
-    expect_identical(phy.sum2$sumry.el, summary(na.omit(edgeLength(phy.alt))))
+    expect_identical(phy.sum2$sumry.el, summary(stats::na.omit(edgeLength(phy.alt))))
 })
 test_that("now remove edge lengths altogether", {
     phy.alt@edge.length[] <- NA
@@ -534,7 +625,7 @@ test_that("now remove edge lengths altogether", {
 ## }
 
 ## test.reorder.phylo4 <- function() {
-##   ## TODO 
+##   ## TODO
 ## }
 
 context("isUltrametric")

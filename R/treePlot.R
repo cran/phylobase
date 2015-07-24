@@ -1,57 +1,69 @@
-#' Phylogeny plotting
-#' 
-#' Plot \code{phylo4} or \code{phylo4d} objects, including associated data.
-#' 
-#' 
-#' @name treePlot-methods
-#' @aliases treePlot plot,ANY,ANY-method plot,pdata,missing-method
-#' plot,phylo4,missing-method treePlot-method treePlot,phylo4,phylo4d-method
-#' @docType methods
-#' @param phy A \code{phylo4} or \code{phylo4d} object
-#' @param type A character string indicating the shape of plotted tree
-#' @param show.tip.label Logical, indicating whether tip labels should be shown
-#' @param show.node.label Logical, indicating whether node labels should be
-#' shown
-#' @param tip.order If NULL the tree is plotted with tips in preorder, if "rev"
-#' this is reversed. Otherwise, it is a character vector of tip labels,
-#' indicating their order along the y axis (from top to bottom). Or, a numeric
-#' vector of tip node IDs indicating the order.
-#' @param plot.data Logical indicating whether \code{phylo4d} data should be
-#' plotted
-#' @param rot Numeric indicating the rotation of the plot in degrees
-#' @param tip.plot.fun A function used to generate plot at the each tip of the
-#' phylogenetic trees
-#' @param edge.color A vector of colors in the order of \code{edges(phy)}
-#' @param node.color A vector of colors indicating the colors of the node
-#' labels
-#' @param tip.color A vector of colors indicating the colors of the tip labels
-#' @param edge.width A vector in the order of \code{edges(phy)} indicating the
-#' widths of edge lines
-#' @param newpage Logical indicating whether the page should be cleared before
-#' plotting
-#' @param \dots Currently unused, parameters to be passed on to \code{gpar}
-#' @return No return value, function invoked for plotting side effect
-#' @section Methods: \describe{ \item{phy = "phylo4"}{plots a tree of class
-#' \linkS4class{phylo4}} \item{phy = "phylo4d"}{plots a tree with one or more
-#' quantitative traits contained in a \linkS4class{phylo4d} object.} }
-#' @author Peter Cowan \email{pdc@@berkeley.edu}
-#' @seealso \code{\link{phylobubbles}}
-#' @keywords methods
-#' @examples
-#' 
-#' 
-#' ## example of plotting two grid plots on the same page
-#' data(geospiza)
-#' geotree <- extractTree(geospiza)
-#' grid.newpage()
-#' pushViewport(viewport(layout=grid.layout(nrow=1, ncol=2), name="base"))
-#'   pushViewport(viewport(layout.pos.col=1, name="plot1"))
-#'     treePlot(geotree, newpage=FALSE)
-#'   popViewport()
-#'   
-#'   pushViewport(viewport(layout.pos.col=2, name="plot2"))
-#'     treePlot(geotree, newpage=FALSE, rot=180)
-#' popViewport(2)
+##' Phylogeny plotting
+##'
+##' Plot \code{phylo4} or \code{phylo4d} objects, including associated data.
+##'
+##'
+##' @name treePlot-methods
+##' @aliases treePlot plot,ANY,ANY-method plot,pdata,missing-method
+##' plot,phylo4,missing-method treePlot-method treePlot,phylo4,phylo4d-method
+##' @docType methods
+##' @details Currently, \code{treePlot} can only plot numeric values
+##' for tree-associated data. The dataset will be subset to only
+##' include columns of class \code{numeric}, \code{integer} or
+##' \code{double}. If a \code{phylo4d} object is passed to the
+##' function and it contains no data, or if the data is in a format
+##' that cannot be plotted, the function will produce a warning. You
+##' can avoid this by using the argument \code{plot.data=FALSE}.
+##' @param phy A \code{phylo4} or \code{phylo4d} object
+##' @param x A \code{phylo4} or \code{phylo4d} object
+##' @param y (only here for compatibility)
+##' @param type A character string indicating the shape of plotted tree
+##' @param show.tip.label Logical, indicating whether tip labels should be shown
+##' @param show.node.label Logical, indicating whether node labels should be
+##' shown
+##' @param tip.order If NULL the tree is plotted with tips in preorder, if "rev"
+##' this is reversed. Otherwise, it is a character vector of tip labels,
+##' indicating their order along the y axis (from top to bottom). Or, a numeric
+##' vector of tip node IDs indicating the order.
+##' @param plot.data Logical indicating whether \code{phylo4d} data should be
+##' plotted
+##' @param rot Numeric indicating the rotation of the plot in degrees
+##' @param tip.plot.fun A function used to generate plot at the each tip of the
+##' phylogenetic trees
+##' @param edge.color A vector of colors in the order of \code{edges(phy)}
+##' @param node.color A vector of colors indicating the colors of the node
+##' labels
+##' @param tip.color A vector of colors indicating the colors of the tip labels
+##' @param edge.width A vector in the order of \code{edges(phy)} indicating the
+##' widths of edge lines
+##' @param newpage Logical indicating whether the page should be cleared before
+##' plotting
+##' @param plot.at.tip should the data plots be at the tip? (logical)
+##' @param margins number of lines around the plot (similar to \code{par(mar)}).
+##' @param \dots additional arguments
+##' @return No return value, function invoked for plotting side effect
+##' @section Methods: \describe{ \item{phy = "phylo4"}{plots a tree of class
+##' \linkS4class{phylo4}} \item{phy = "phylo4d"}{plots a tree with one or more
+##' quantitative traits contained in a \linkS4class{phylo4d} object.} }
+##' @author Peter Cowan \email{pdc@@berkeley.edu}, Francois Michonneau
+##' @seealso \code{\link{phylobubbles}}
+##' @keywords methods
+##' @export
+##' @examples
+##'
+##' ## example of plotting two grid plots on the same page
+##' library(grid)
+##' data(geospiza)
+##' geotree <- extractTree(geospiza)
+##' grid.newpage()
+##' pushViewport(viewport(layout=grid.layout(nrow=1, ncol=2), name="base"))
+##'   pushViewport(viewport(layout.pos.col=1, name="plot1"))
+##'     treePlot(geotree, newpage=FALSE)
+##'   popViewport()
+##'
+##'   pushViewport(viewport(layout.pos.col=2, name="plot2"))
+##'     treePlot(geotree, newpage=FALSE, rot=180)
+##' popViewport(2)
 `treePlot` <- function(phy,
                      type = c('phylogram', 'cladogram', 'fan'),
                      show.tip.label = TRUE,
@@ -80,14 +92,25 @@
 
     if (!inherits(phy, 'phylo4')) stop('treePlot requires a phylo4 or phylo4d object')
     if (!isRooted(phy)) stop("treePlot function requires a rooted tree.")
-    if (plot.data && !hasTipData(phy)) {
-        warning("tree has no tip data to plot")
-        plot.data <- FALSE
+    if (plot.data) {
+        if (!hasTipData(phy)) {
+            warning("tree has no tip data to plot")
+            plot.data <- FALSE
+        }
+        else {
+            ## if new plotting functions are developped that allow users to plot other type of data
+            ## this needs to be removed/adjusted
+            ##  other checks are being made in phylobubbles()
+            if (!any(sapply(tdata(phy, "tip"), function(x) class(x) %in% c("numeric", "double", "integer")))) {
+                warning("only numeric data can be plotted at this time")
+                plot.data <- FALSE
+            }
+        }
     }
     if (hasRetic(phy))
         stop("treePlot requires non-reticulated trees.")
 
-    if(newpage) grid.newpage()
+    if(newpage) grid::grid.newpage()
     type   <- match.arg(type)
     Nedges <- nEdges(phy)
     Ntips  <- nTips(phy)
@@ -113,7 +136,7 @@
     }
 
     ## plotViewport is a convience function that provides margins in lines
-    pushViewport(plotViewport(margins=margins))
+    grid::pushViewport(grid::plotViewport(margins=margins))
 
     if(!plot.data) {
         plotOneTree(xxyy, type, show.tip.label, show.node.label, edge.color,
@@ -156,55 +179,55 @@
             } ## if (plot.at.tip)
         } ## else
     } ## else
-    upViewport() # margins
+    grid::upViewport() # margins
 }
 
 
 
-#' Plot a phylo4 object
-#' 
-#' Plots the phylogenetic tree contained in a \code{phylo4} or \code{phylo4d}
-#' object.
-#' 
-#' 
-#' @param xxyy A list created by the \code{\link{phyloXXYY}} function
-#' @param type A character string indicating the shape of plotted tree
-#' @param show.tip.label Logical, indicating whether tip labels should be shown
-#' @param show.node.label Logical, indicating whether node labels should be
-#' shown
-#' @param edge.color A vector of colors in the order of \code{edges(phy)}
-#' @param node.color A vector of colors indicating the colors of the node
-#' labels
-#' @param tip.color A vector of colors indicating the colors of the tip labels
-#' @param edge.width A vector in the order of \code{edges(phy)} indicating the
-#' widths of edge lines
-#' @param rot Numeric indicating the rotation of the plot in degrees
-#' @return Returns no values, function invoked for the plotting side effect.
-#' @author Peter Cowan \email{pdc@@berkeley.edu}
-#' @seealso \code{treePlot}, \code{\link{phyloXXYY}}
-#' @keywords methods
-#' @examples
-#' 
-#' 
-#' data(geospiza)
-#' grid.newpage()
-#' xxyy <- phyloXXYY(geospiza)
-#' plotOneTree(xxyy, type = 'phylogram', 
-#'   show.tip.label = TRUE, show.node.label = TRUE,
-#'   edge.color = 'black', node.color = 'orange', tip.color = 'blue',
-#'   edge.width = 1, rot = 0
-#' )
-#' 
-#' grid.newpage()
-#' pushViewport(viewport(w = 0.8, h = 0.8))
-#' plotOneTree(xxyy, type = 'phylogram', 
-#'   show.tip.label = TRUE, show.node.label = TRUE,
-#'   edge.color = 'black', node.color = 'orange', tip.color = 'blue',
-#'   edge.width = 1, rot = 0
-#' )
-#' popViewport()
-#' 
-#' 
+##' Plot a phylo4 object
+##'
+##' Plots the phylogenetic tree contained in a \code{phylo4} or \code{phylo4d}
+##' object.
+##'
+##'
+##' @param xxyy A list created by the \code{\link{phyloXXYY}} function
+##' @param type A character string indicating the shape of plotted tree
+##' @param show.tip.label Logical, indicating whether tip labels should be shown
+##' @param show.node.label Logical, indicating whether node labels should be
+##' shown
+##' @param edge.color A vector of colors in the order of \code{edges(phy)}
+##' @param node.color A vector of colors indicating the colors of the node
+##' labels
+##' @param tip.color A vector of colors indicating the colors of the tip labels
+##' @param edge.width A vector in the order of \code{edges(phy)} indicating the
+##' widths of edge lines
+##' @param rot Numeric indicating the rotation of the plot in degrees
+##' @return Returns no values, function invoked for the plotting side effect.
+##' @author Peter Cowan \email{pdc@@berkeley.edu}
+##' @seealso \code{treePlot}, \code{\link{phyloXXYY}}
+##' @export
+##' @keywords methods
+##' @examples
+##' library(grid)
+##' data(geospiza)
+##' grid.newpage()
+##' xxyy <- phyloXXYY(geospiza)
+##' plotOneTree(xxyy, type = 'phylogram',
+##'   show.tip.label = TRUE, show.node.label = TRUE,
+##'   edge.color = 'black', node.color = 'orange', tip.color = 'blue',
+##'   edge.width = 1, rot = 0
+##' )
+##'
+##' grid.newpage()
+##' pushViewport(viewport(w = 0.8, h = 0.8))
+##' plotOneTree(xxyy, type = 'phylogram',
+##'   show.tip.label = TRUE, show.node.label = TRUE,
+##'   edge.color = 'black', node.color = 'orange', tip.color = 'blue',
+##'   edge.width = 1, rot = 0
+##' )
+##' popViewport()
+##'
+
 plotOneTree <- function(xxyy, type, show.tip.label, show.node.label, edge.color,
                         node.color, tip.color, edge.width, rot)
 {
@@ -240,12 +263,12 @@ plotOneTree <- function(xxyy, type, show.tip.label, show.node.label, edge.color,
         ## adjlabw -- the max width for adjusting the size of viewports
         ## laboff  -- a vector of half string widths for
         ## offsetting center justified labels, handy for vp rotation
-        labw    <- stringWidth(tipLabels(phy))
-        adjlabw <- max(labw) + unit(0.1, 'inches')
-        laboff  <- labw * 0.5 + unit(0.1, 'inches')
+        labw    <- grid::stringWidth(tipLabels(phy))
+        adjlabw <- max(labw) + grid::unit(0.1, 'inches')
+        laboff  <- labw * 0.5 + grid::unit(0.1, 'inches')
         ## print(foo <<- laboff)
         treelayout <- grid.layout(nrow = 1, ncol = 2,
-            widths = unit.c(unit(1, 'null', NULL), convertUnit(adjlabw, 'inches'))
+            widths = grid::unit.c(grid::unit(1, 'null', NULL), grid::convertUnit(adjlabw, 'inches'))
             )
         tindex <- pedges[pedges[, 2] <= Ntips, 2]
         if(length(tip.color) != Ntips) {
@@ -254,97 +277,98 @@ plotOneTree <- function(xxyy, type, show.tip.label, show.node.label, edge.color,
         # keep labels horizontal unless plot is upwards or downwards
         lrot <- ifelse(rot %% 360 %in% c(90, 270), 0, -rot)
     } else {
-        treelayout <- grid.layout(nrow = 1, ncol = 1)
+        treelayout <- grid::grid.layout(nrow = 1, ncol = 1)
     }
     # grid.show.layout(treelayout)
-    pushViewport(viewport(
+    grid::pushViewport(grid::viewport(
         x = 0.5, y = 0.5,
         width = 1, height = 1,
         layout = treelayout, angle = rot, name = 'treelayout'))
-    pushViewport(viewport(
+    grid::pushViewport(grid::viewport(
         layout.pos.col = 1,
         name = 'tree'))
     if (type == "fan") {
-        dseg <- grid.segments( # draws diag lines
+        dseg <- grid::grid.segments( # draws diag lines
             x0 = segs$v0x, y0 = segs$v0y,
             x1 = segs$h1x, y1 = segs$h1y,
-            name = "diag", gp = gpar(col = edge.color, lwd = edge.width))
+            name = "diag", gp = grid::gpar(col = edge.color, lwd = edge.width))
     } else {
-        vseg <- grid.segments( # draws vertical lines
+        vseg <- grid::grid.segments( # draws vertical lines
             x0 = segs$v0x, y0 = segs$v0y,
             x1 = segs$v1x, y1 = segs$v1y,
-            name = "vert", gp = gpar(col = edge.color, lwd = edge.width))
-        hseg <- grid.segments( # draws horizontal lines
+            name = "vert", gp = grid::gpar(col = edge.color, lwd = edge.width))
+        hseg <- grid::grid.segments( # draws horizontal lines
             x0 = segs$h0x, y0 = segs$h0y,
             x1 = segs$h1x, y1 = segs$h1y,
-            name = "horz", gp = gpar(col = edge.color, lwd = edge.width))
+            name = "horz", gp = grid::gpar(col = edge.color, lwd = edge.width))
     }
-    upViewport() # tree
+    grid::upViewport() # tree
     if(show.tip.label) {
-        pushViewport(viewport(layout.pos.col = 1,
+        grid::pushViewport(grid::viewport(layout.pos.col = 1,
             name = 'tiplabelvp'))
-        labtext <- grid.text(
+        labtext <- grid::grid.text(
             tipLabels(phy)[tindex],
-            x = unit(xxyy$xx[pedges[, 2] %in% tindex], "native") + laboff[tindex],
+            x = grid::unit(xxyy$xx[pedges[, 2] %in% tindex], "native") + laboff[tindex],
             y = xxyy$yy[pedges[, 2] %in% tindex], rot = lrot,
             default.units = 'native', name = 'tiplabels',
-            just = 'center', gp = gpar(col = tip.color[tindex])
+            just = 'center', gp = grid::gpar(col = tip.color[tindex])
         )
-        upViewport() #tiplabelvp
+        grid::upViewport() #tiplabelvp
     }
     # TODO probably want to be able to adjust the location of these guys
     if(show.node.label) {
-        pushViewport(viewport(layout = treelayout, layout.pos.col = 1, name = 'nodelabelvp'))
+        grid::pushViewport(grid::viewport(layout = treelayout, layout.pos.col = 1, name = 'nodelabelvp'))
             theLabels <- nodeLabels(phy)
             # don't plot NAs
             theLabels[is.na(theLabels)] <- ""
-        labtext <- grid.text(
+        labtext <- grid::grid.text(
             theLabels,
             x = c(xxyy$xx[pedges[, 2] > Ntips]),
             y = c(xxyy$yy[pedges[, 2] > Ntips]),
             default.units = 'npc', name = 'nodelabels', rot = -rot,
-            just = 'center', gp = gpar(col = node.color)
+            just = 'center', gp = grid::gpar(col = node.color)
         )
-        upViewport() #nodelabelvp
+        grid::upViewport() #nodelabelvp
     }
-    upViewport() # treelayout
+    grid::upViewport() # treelayout
     # grobTree(vseg, hseg, labtext)
 }
 
 
 
-#' Calculate node x and y coordinates
-#' 
-#' Calculates the node x and y locations for plotting a phylogenetic tree.
-#' 
-#' The y coordinates of the tips are evenly spaced from 0 to 1 in pruningwise
-#' order.  Ancestor y nodes are given the mean value of immediate descendants.
-#' The root is given the x coordinate 0 and descendant nodes are placed
-#' according to the cumulative branch length from the root, with a maximum x
-#' value of 1.
-#' 
-#' @param phy A \code{phylo4} or \code{phylo4d} object.
-#' @param tip.order A character vector of tip labels, indicating their order
-#' along the y axis (from top to bottom). Or, a numeric vector of tip node IDs
-#' indicating the order.
-#' @return \item{yy}{Internal node and tip y coordinates} \item{xx}{Internal
-#' node and tip x coordinates} \item{phy}{A \code{phylo4} or \code{phylo4d}
-#' object} \item{segs}{A list of \code{h0x, h1x, v0x, v1x} and \code{h0y, h1y,
-#' v0y, v1y} describing the start and end points for the plot line segments}
-#' \item{torder}{The tip order provided as \code{tip.order} or if NULL the
-#' preoder tip order} \item{eorder}{The an index of the reordered edges
-#' compared to the result of \code{edges(phy)}}
-#' @author Peter Cowan \email{pdc@@berkeley.edu}
-#' @seealso \code{treePlot}, \code{\link{plotOneTree}}
-#' @keywords methods
-#' @examples
-#' 
-#' 
-#' data(geospiza)
-#' coor <- phyloXXYY(geospiza)
-#' plot(coor$xx, coor$yy, pch = 20)
-#' 
-#' 
+##' Calculate node x and y coordinates
+##'
+##' Calculates the node x and y locations for plotting a phylogenetic tree.
+##'
+##' The y coordinates of the tips are evenly spaced from 0 to 1 in pruningwise
+##' order.  Ancestor y nodes are given the mean value of immediate descendants.
+##' The root is given the x coordinate 0 and descendant nodes are placed
+##' according to the cumulative branch length from the root, with a maximum x
+##' value of 1.
+##'
+##' @param phy A \code{phylo4} or \code{phylo4d} object.
+##' @param tip.order A character vector of tip labels, indicating their order
+##' along the y axis (from top to bottom). Or, a numeric vector of tip node IDs
+##' indicating the order.
+##' @return \item{yy}{Internal node and tip y coordinates} \item{xx}{Internal
+##' node and tip x coordinates} \item{phy}{A \code{phylo4} or \code{phylo4d}
+##' object} \item{segs}{A list of \code{h0x, h1x, v0x, v1x} and \code{h0y, h1y,
+##' v0y, v1y} describing the start and end points for the plot line segments}
+##' \item{torder}{The tip order provided as \code{tip.order} or if NULL the
+##' preoder tip order} \item{eorder}{The an index of the reordered edges
+##' compared to the result of \code{edges(phy)}}
+##' @author Peter Cowan \email{pdc@@berkeley.edu}
+##' @seealso \code{treePlot}, \code{\link{plotOneTree}}
+##' @export
+##' @keywords methods
+##' @examples
+##'
+##'
+##' data(geospiza)
+##' coor <- phyloXXYY(geospiza)
+##' plot(coor$xx, coor$yy, pch = 20)
+##'
+##'
 phyloXXYY <- function(phy, tip.order=NULL)
 {
     phy.orig <- phy
@@ -427,9 +451,8 @@ phyloXXYY <- function(phy, tip.order=NULL)
     list(xx = xx, yy = yy, phy = phy, segs = segs, torder=tip.order, eorder=eindex)
 }
 
-
 .bubLegendGrob <- function(tipdata, tipdataS) {
-    grob(tipdata=tipdata, tipdataS=tipdataS, cl='bubLegend')
+    grid::grob(tipdata=tipdata, tipdataS=tipdataS, cl='bubLegend')
 }
 
 drawDetails.bubLegend <- function(x, ...) {
@@ -441,67 +464,68 @@ drawDetails.bubLegend <- function(x, ...) {
     ts <- x$tipdataS
     ## return to the bubble plot viewport to get properly scaled values
     ## this relies on having well named unique viewports
-    seekViewport("bubble_plots")
+    grid::seekViewport("bubble_plots")
         ## retreive the min and max non-zero bubbles as numerics not units
-        bubrange <- convertUnit(
-                    unit(c(min(ts[ts != 0], na.rm=TRUE), max(ts[ts != 0], na.rm=TRUE)), "native"),
+        bubrange <- grid::convertUnit(
+                    grid::unit(c(min(ts[ts != 0], na.rm=TRUE), max(ts[ts != 0], na.rm=TRUE)), "native"),
                     "mm", valueOnly=TRUE)
-    seekViewport("bubblelegend")
+    grid::seekViewport("bubblelegend")
     ## grid.rect()
     ## Generate the sequence of legend bubble sizes and convert to grid mm units
-    legcirS  <- unit(seq(bubrange[1], bubrange[2], length.out=leglen), "mm")
+    legcirS  <- grid::unit(seq(bubrange[1], bubrange[2], length.out=leglen), "mm")
     ## get the corresponding sequence of actual data values
     legcir   <- seq(min(tipdata[tipdata != 0], na.rm=TRUE),
                     max(tipdata[tipdata != 0], na.rm=TRUE), length.out=leglen)
     ccol     <- ifelse(legcir < 0, 'black', 'white')
 
-    leftedge <- abs(convertUnit(legcirS[1], 'npc', valueOnly=TRUE)) + 0.1
+    leftedge <- abs(grid::convertUnit(legcirS[1], 'npc', valueOnly=TRUE)) + 0.1
     xloc     <- seq(leftedge, 0.5, length.out=leglen)
-    textsp   <- convertUnit(max(abs(legcirS)), axisFrom="y", axisTo="y", 'npc', valueOnly=TRUE)
-    strsp    <- convertUnit(unit(1, "strheight", "TTT"), axisFrom="y", 'npc', valueOnly=TRUE)
-    grid.circle(x=xloc, y=0.9 - textsp - strsp, r=legcirS, gp = gpar(fill=ccol), default.units = 'npc')
-    grid.text(as.character(signif(legcir, digits = 2)),
+    textsp   <- grid::convertUnit(max(abs(legcirS)), axisFrom="y", axisTo="y", 'npc', valueOnly=TRUE)
+    strsp    <- grid::convertUnit(unit(1, "strheight", "TTT"), axisFrom="y", 'npc', valueOnly=TRUE)
+    grid::grid.circle(x=xloc, y=0.9 - textsp - strsp, r=legcirS, gp = grid::gpar(fill=ccol), default.units = 'npc')
+    grid::grid.text(as.character(signif(legcir, digits = 2)),
                 x=xloc, y=0.75 - 2 * textsp - strsp,
-                gp=gpar(cex=0.75),
+                gp=grid::gpar(cex=0.75),
                 default.units='npc'
     )
 }
 
 
 
-#' Bubble plots for phylo4d objects
-#' 
-#' Plots either circles or squares corresponding to the magnitude of each cell
-#' of a \code{phylo4d} object.
-#' 
-#' 
-#' @param type the type of plot
-#' @param place.tip.label A string indicating whether labels should be plotted
-#' to the right or to the left of the bubble plot
-#' @param show.node.label A logical indicating whether internal node labels
-#' should be plotted
-#' @param rot The number of degrees that the plot should be rotated
-#' @param edge.color A vector of colors for the tree edge segments
-#' @param node.color A vector of colors for the coloring the nodes
-#' @param tip.color A vector of colors for the coloring the tip labels
-#' @param edge.width A vector of line widths for the tree edges
-#' @param newpage Logical to control whether the device is cleared before
-#' plotting, useful for adding plot inside other plots
-#' @param \dots Additional parameters passed to the bubble plotting functions
-#' @param XXYY The out put from the phyloXXYY function
-#' @param square Logical indicating whether the plot 'bubbles' should be
-#' squares
-#' @param grid A logical indicating whether a grey grid should be plotted
-#' behind the bubbles
-#' @author Peter Cowan \email{pdc@@berkeley.edu}
-#' @seealso \code{\link{phyloXXYY}}, \code{treePlot}
-#' @keywords methods
-#' @examples
-#' 
-#' ##---- Should be DIRECTLY executable !! ----
-#' ##-- ==>  Define data, use random,
-#' ##--	or do  help(data=index)  for the standard data sets.
-#' 
+##' Bubble plots for phylo4d objects
+##'
+##' Plots either circles or squares corresponding to the magnitude of each cell
+##' of a \code{phylo4d} object.
+##'
+##'
+##' @param type the type of plot
+##' @param place.tip.label A string indicating whether labels should be plotted
+##' to the right or to the left of the bubble plot
+##' @param show.node.label A logical indicating whether internal node labels
+##' should be plotted
+##' @param rot The number of degrees that the plot should be rotated
+##' @param edge.color A vector of colors for the tree edge segments
+##' @param node.color A vector of colors for the coloring the nodes
+##' @param tip.color A vector of colors for the coloring the tip labels
+##' @param edge.width A vector of line widths for the tree edges
+##' @param newpage Logical to control whether the device is cleared before
+##' plotting, useful for adding plot inside other plots
+##' @param \dots Additional parameters passed to the bubble plotting functions
+##' @param XXYY The out put from the phyloXXYY function
+##' @param square Logical indicating whether the plot 'bubbles' should be
+##' squares
+##' @param grid A logical indicating whether a grey grid should be plotted
+##' behind the bubbles
+##' @author Peter Cowan \email{pdc@@berkeley.edu}
+##' @export
+##' @seealso \code{\link{phyloXXYY}}, \code{treePlot}
+##' @keywords methods
+##' @examples
+##'
+##' ##---- Should be DIRECTLY executable !! ----
+##' ##-- ==>  Define data, use random,
+##' ##--	or do  help(data=index)  for the standard data sets.
+##'
 phylobubbles <- function(type = type,
                         place.tip.label = "right",
                         show.node.label = show.node.label,
@@ -524,22 +548,25 @@ phylobubbles <- function(type = type,
     lab.left  <- ifelse(place.tip.label %in% c("left", "both"), TRUE, FALSE)
 
     phy       <- XXYY$phy
-    tmin      <- min(tdata(phy, type = 'tip'), na.rm = TRUE)
-    tmax      <- max(tdata(phy, type = 'tip'), na.rm = TRUE)
-    pedges    <- edges(phy)
     tip.order <- XXYY$torder
-    tipdata   <- tdata(phy, type = "tip")[tip.order,,drop=FALSE]
+    tipdata   <- tdata(phy, type = "tip")[tip.order,, drop=FALSE]
+    tipClass <- sapply(tipdata, function(x) class(x) %in% c("double", "integer", "numeric"))
+    tipdata <- tipdata[, tipClass, drop=FALSE]
+    tmin      <- min(tipdata, na.rm = TRUE)
+    tmax      <- max(tipdata, na.rm = TRUE)
+    pedges    <- edges(phy)
+
     nVars     <- ncol(tipdata) # number of bubble columns
 
-    dlabwdth <- max(stringWidth(colnames(tipdata))) * 1.2
-    if(convertWidth(dlabwdth, 'cm', valueOnly=TRUE) < 2) {dlabwdth <- unit(2, 'cm')}
-    phyplotlayout <- grid.layout(nrow = 2, ncol = 2,
-        heights = unit.c(unit(1, 'null'), dlabwdth),
-        widths = unit(c(1, 1), c('null', 'null'), list(NULL, NULL)))
-    pushViewport(viewport(layout = phyplotlayout, name = 'phyplotlayout'))
-    pushViewport(viewport(layout.pos.row = 1:2, layout.pos.col = 2,
-                height = unit(1, 'npc') +
-                                convertUnit(dlabwdth, 'npc'),
+    dlabwdth <- max(grid::stringWidth(colnames(tipdata))) * 1.2
+    if(grid::convertWidth(dlabwdth, 'cm', valueOnly=TRUE) < 2) {dlabwdth <- grid::unit(2, 'cm')}
+    phyplotlayout <- grid::grid.layout(nrow = 2, ncol = 2,
+        heights = grid::unit.c(grid::unit(1, 'null'), dlabwdth),
+        widths = grid::unit(c(1, 1), c('null', 'null'), list(NULL, NULL)))
+    grid::pushViewport(viewport(layout = phyplotlayout, name = 'phyplotlayout'))
+    grid::pushViewport(viewport(layout.pos.row = 1:2, layout.pos.col = 2,
+                height = grid::unit(1, 'npc') +
+                                grid::convertUnit(dlabwdth, 'npc'),
                 name = 'bubbleplots', default.units = 'native'))
 
     # tip y coordinates
@@ -574,19 +601,19 @@ phylobubbles <- function(type = type,
 
     ## get label widths
     if(lab.right) {
-        tiplabwidth  <- max(stringWidth(tipLabels(phy)))
-    } else {tiplabwidth <- unit(0, 'null', NULL)}
+        tiplabwidth  <- max(grid::stringWidth(tipLabels(phy)))
+    } else {tiplabwidth <- grid::unit(0, 'null', NULL)}
 
     ## 2x2 layout -- room at the bottom for data labels, and legend
-    bublayout <- grid.layout(nrow = 2, ncol = 2,
-        widths  = unit.c(unit(1, 'null', NULL), tiplabwidth),
-        heights = unit.c(unit(1, 'null', NULL), dlabwdth))
-    pushViewport(viewport(
+    bublayout <- grid::grid.layout(nrow = 2, ncol = 2,
+        widths  = grid::unit.c(grid::unit(1, 'null', NULL), tiplabwidth),
+        heights = grid::unit.c(grid::unit(1, 'null', NULL), dlabwdth))
+    grid::pushViewport(viewport(
         x = 0.5, y = 0.5,
         width = 0.95, height = 1,
         layout = bublayout, name = 'bublayout'
     ))
-    pushViewport(viewport(
+    grid::pushViewport(viewport(
         name = 'bubble_plots',
         layout = bublayout,
         layout.pos.col = 1,
@@ -594,43 +621,43 @@ phylobubbles <- function(type = type,
     ))
     if(grid) {
         ## draw light grey grid behind bubbles
-        grid.segments(x0 = 0,   x1 = 1,
-                      y0 = tys, y1 = tys, gp = gpar(col = 'grey'))
-        grid.segments(x0 = xpos, x1 = xpos,
-                      y0 = 0,    y1 = 1, gp = gpar(col = 'grey'))
+        grid::grid.segments(x0 = 0,   x1 = 1,
+                      y0 = tys, y1 = tys, gp = grid::gpar(col = 'grey'))
+        grid::grid.segments(x0 = xpos, x1 = xpos,
+                      y0 = 0,    y1 = 1, gp = grid::gpar(col = 'grey'))
     }
     if (length(naxs) > 0) {
         ## if ther are missing values plot Xs
-        grid.points(naxs, nays, pch = 4)
+        grid::grid.points(naxs, nays, pch = 4)
     }
 
     if(square) {
         ## alternative to circles
         ## to keep the squares square, yet resize nicely use the square npc
-        sqedge <- unit(unlist(tipdataS), 'snpc')
-        grid.rect(x = xrep, y = yrep,
+        sqedge <- grid::unit(unlist(tipdataS), 'snpc')
+        grid::grid.rect(x = xrep, y = yrep,
             width = sqedge,
             height = sqedge,
-            gp=gpar(fill = ccol))
+            gp=grid::gpar(fill = ccol))
     } else {
         ## plot bubbles
-        grid.circle(xrep, yrep, r = unlist(tipdataS), gp = gpar(fill = ccol))
+        grid::grid.circle(xrep, yrep, r = unlist(tipdataS), gp = grid::gpar(fill = ccol))
     }
-    upViewport()
+    grid::upViewport()
 
     ## push view ports for tip and data labels fixed locations
     if(lab.right) {
-        pushViewport(viewport(
+        grid::pushViewport(viewport(
             name = 'bubble_tip_labels',
             layout = bublayout,
             layout.pos.col = 2,
             layout.pos.row = 1
         ))
         tt <- tipLabels(phy)[tip.order] # phy@tip.label
-        grid.text(tt, 0.1, tys, just = 'left')
-        upViewport()
+        grid::grid.text(tt, 0.1, tys, just = 'left')
+        grid::upViewport()
     }
-    pushViewport(viewport(
+    grid::pushViewport(viewport(
         name = 'bubble_data_labels',
         layout = bublayout,
         layout.pos.col = 1,
@@ -641,21 +668,21 @@ phylobubbles <- function(type = type,
     ## data.label.fontsize <- data.label.space / ncol(tipdata)
     ## , gp=gpar(fontsize=data.label.fontsize))
     ## offset the data labels from the bottom bubble
-    datalaboffset <- convertUnit(unit(15, "mm"), 'npc', valueOnly=TRUE)
-    grid.text(colnames(tipdata), xpos, 1-datalaboffset, rot = 90, just = 'right')
+    datalaboffset <- grid::convertUnit(grid::unit(15, "mm"), 'npc', valueOnly=TRUE)
+    grid::grid.text(colnames(tipdata), xpos, 1-datalaboffset, rot = 90, just = 'right')
 
-    upViewport(3)
-    pushViewport(viewport(layout.pos.row=2, layout.pos.col=1,
+    grid::upViewport(3)
+    grid::pushViewport(viewport(layout.pos.row=2, layout.pos.col=1,
                 name='bubblelegend'))
     yyy <- .bubLegendGrob(tipdata, tipdataS)
-    grid.draw(yyy)
-    upViewport()
+    grid::grid.draw(yyy)
+    grid::upViewport()
 
-    pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1,
+    grid::pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1,
                 name = 'tree'))
         plotOneTree(XXYY, type, show.tip.label=lab.left, show.node.label, edge.color,
                                 node.color, tip.color, edge.width, rot)
-    upViewport(2)
+    grid::upViewport(2)
 
     # to make a nice legend, return the biggest smallest and a scaling factor
     # translate the scale of the current vp to a fixed value
@@ -669,29 +696,30 @@ phylobubbles <- function(type = type,
 
 
 
-#' Plotting trees and associated data
-#' 
-#' Plotting phylogenetic trees and associated data
-#' 
-#' 
-#' @param xxyy A list created by the \code{\link{phyloXXYY}} function
-#' @param type A character string indicating the shape of plotted tree
-#' @param show.tip.label Logical, indicating whether tip labels should be shown
-#' @param show.node.label Logical, indicating whether node labels should be
-#' shown
-#' @param rot Numeric indicating the rotation of the plot in degrees
-#' @param tip.plot.fun A function used to plot the data elements of a
-#' \code{phylo4d} object
-#' @param edge.color A vector of colors in the order of \code{edges(phy)}
-#' @param node.color A vector of colors indicating the colors of the node
-#' labels
-#' @param tip.color A vector of colors indicating the colors of the tip labels
-#' @param edge.width A vector in the order of \code{edges(phy)} indicating the
-#' widths of edge lines
-#' @param \dots Additional parameters passed to \code{tip.plot.fun}
-#' @return creates a plot on the current graphics device.
-#' @author Peter Cowan
-#' @keywords methods
+##' Plotting trees and associated data
+##'
+##' Plotting phylogenetic trees and associated data
+##'
+##'
+##' @param xxyy A list created by the \code{\link{phyloXXYY}} function
+##' @param type A character string indicating the shape of plotted tree
+##' @param show.tip.label Logical, indicating whether tip labels should be shown
+##' @param show.node.label Logical, indicating whether node labels should be
+##' shown
+##' @param rot Numeric indicating the rotation of the plot in degrees
+##' @param tip.plot.fun A function used to plot the data elements of a
+##' \code{phylo4d} object
+##' @param edge.color A vector of colors in the order of \code{edges(phy)}
+##' @param node.color A vector of colors indicating the colors of the node
+##' labels
+##' @param tip.color A vector of colors indicating the colors of the tip labels
+##' @param edge.width A vector in the order of \code{edges(phy)} indicating the
+##' widths of edge lines
+##' @param \dots Additional parameters passed to \code{tip.plot.fun}
+##' @return creates a plot on the current graphics device.
+##' @author Peter Cowan
+##' @export
+##' @keywords methods
 tip.data.plot <- function(
                      xxyy,
                      type = c('phylogram', 'cladogram', 'fan'),
@@ -709,19 +737,19 @@ tip.data.plot <- function(
     tip.order <- xxyy$torder
     pedges <- edges(phy)
     Ntips  <- nTips(phy)
-    datalayout <- grid.layout(ncol = 2, widths = unit(c(1, 1/Ntips), c('null', 'null')))
+    datalayout <- grid::grid.layout(ncol = 2, widths = grid::unit(c(1, 1/Ntips), c('null', 'null')))
     # TODO this is done multiple times,
-    pushViewport(viewport(layout = datalayout, angle = rot,
+    grid::pushViewport(viewport(layout = datalayout, angle = rot,
                         name = 'datalayout'))
-    pushViewport(viewport(
+    grid::pushViewport(viewport(
         yscale = c(-0.5 / Ntips, 1 + 0.5 / Ntips),
         xscale = c(0, 1 + 1 / Ntips),
         layout.pos.col = 1,
         name = 'data_plots'))
     ## TODO should plots float at tips, or only along edge?
-    hc <- convertY(unit(1 / Ntips, 'snpc'), 'npc')
+    hc <- grid::convertY(grid::unit(1 / Ntips, 'snpc'), 'npc')
     for(i in 1:Ntips) {
-        pushViewport(viewport(
+        grid::pushViewport(viewport(
             y = xxyy$yy[pedges[, 2] == i],
             x = 1 + 1 / (2 * Ntips), # xxyy$xx[phy@edge[, 2] == i],
             height = hc,
@@ -735,17 +763,22 @@ tip.data.plot <- function(
             tvals <- tdata(phy, type = 'tip')[nodeId(phy,'tip'), , drop=FALSE]
             vals = t(tvals[i, ])
             if (!all(is.na(vals))) tip.plot.fun(vals, ...)
-        upViewport() # loop viewports
+        grid::upViewport() # loop viewports
     }
     plotOneTree(xxyy, type, show.tip.label, show.node.label, edge.color,
                             node.color, tip.color, edge.width, rot)
-    upViewport(2) ## data_plot & datalayout
+    grid::upViewport(2) ## data_plot & datalayout
 }
 
 # phyloStripchart <- function()
 
+##' @rdname treePlot-methods
+##' @aliases plot
+##' @exportMethod plot
 setGeneric('plot')
+
+##' @rdname treePlot-methods
+##' @aliases plot,phylo4-method
 setMethod('plot', signature(x='phylo4', y='missing'), function(x, y, ...) {
     treePlot(x, ...)
 })
-

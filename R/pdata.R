@@ -2,20 +2,21 @@
 ptypes <- c("multitype","binary","continuous","DNA","RNA","aacid",
             "other","unknown")
 
-#' Class "pdata"
-#' 
-#' Data class for phylo4d objects
-#' 
-#' 
-#' @name pdata-class
-#' @aliases ptypes pdata-class [<-,pdata-method [,pdata-method
-#' [,pdata,ANY,ANY,ANY-method [[,pdata-method [[<-,pdata-method
-#' [[,pdata,ANY,ANY-method [[,pdata,ANY,missing-method
-#' @docType class
-#' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("pdata", ...)}.
-#' @author Ben Bolker
-#' @keywords classes
+##' Class "pdata"
+##'
+##' Data class for phylo4d objects
+##'
+##'
+##' @name pdata-class
+##' @aliases ptypes pdata-class [<-,pdata-method [,pdata-method
+##' [,pdata,ANY,ANY,ANY-method [[,pdata-method [[<-,pdata-method
+##' [[,pdata,ANY,ANY-method [[,pdata,ANY,missing-method
+##' @docType class
+##' @section Objects from the Class: Objects can be created by calls of the form
+##' \code{new("pdata", ...)}.
+##' @author Ben Bolker
+##' @keywords classes
+####  @export
 setClass("pdata", representation(data="data.frame",
                                  type="factor",
                                  comment="character",
@@ -26,23 +27,23 @@ setClass("pdata", representation(data="data.frame",
 ## pdata constructor
 
 
-#' Constructor for pdata (phylogenetic data) class
-#' 
-#' Combine data, type, comments, and metadata information to create a new pdata
-#' object, or check such an object for consistency
-#' 
-#' 
-#' @aliases pdata check_pdata
-#' @param data a data frame
-#' @param type a factor with levels as specified by \linkS4class{pdata}, the
-#' same length as \code{ncol(data)}
-#' @param comment a character vector, the same length as \code{ncol(data)}
-#' @param metadata an arbitrary list
-#' @param object an object of class \code{pdata}
-#' @return An object of class \code{pdata}
-#' @author Ben Bolker
-#' @seealso \linkS4class{pdata}
-#' @keywords misc
+##' Constructor for pdata (phylogenetic data) class
+##'
+##' Combine data, type, comments, and metadata information to create a new pdata
+##' object, or check such an object for consistency
+##'
+##'
+##' @aliases pdata check_pdata
+##' @param data a data frame
+##' @param type a factor with levels as specified by \linkS4class{pdata}, the
+##' same length as \code{ncol(data)}
+##' @param comment a character vector, the same length as \code{ncol(data)}
+##' @param metadata an arbitrary list
+## @param object an object of class \code{pdata}
+##' @return An object of class \code{pdata}
+##' @author Ben Bolker
+##' @seealso \linkS4class{pdata}
+##' @keywords misc
 pdata <- function(data,type,comment,metadata) {
   nvar <- ncol(data)
   if (missing(type)) {
@@ -55,6 +56,7 @@ pdata <- function(data,type,comment,metadata) {
   check_pdata(obj)
   obj
 }
+
 
 check_pdata <- function(object) {
     nvar <- ncol(object@data)
@@ -69,31 +71,36 @@ check_pdata <- function(object) {
     }
 }
 
-setMethod("[","pdata",function(x,i, j,...,drop=FALSE) {
-  xd <- x@data[i,j,...,drop=drop]
-  xd2 <- as.data.frame(xd)
-  xd2
-})
+## setMethod("[","pdata",function(x,i, j,...,drop=FALSE) {
+##   xd <- x@data[i,j,...,drop=drop]
+##   xd2 <- as.data.frame(xd)
+##   xd2
+## })
 
-setMethod("[<-","pdata",function(x,i, j,...,drop=FALSE,value) {
-  "[<-"(x@data,i,j,...,drop=drop,value)
-})
+## #### @exportMethod [<-
+## setGeneric("[<-")
 
-setGeneric("[[")
-setMethod("[[","pdata",
-          function(x,i,j,...,exact=NA) {
-            x@data[[i,j,...,exact=exact]]
-          })
+## setMethod("[<-","pdata",function(x,i, j,...,drop=FALSE,value) {
+##   "[<-"(x@data,i,j,...,drop=drop,value)
+## })
 
-setGeneric("[[<-")
-setMethod("[[<-","pdata",
-          function(x,i,j,...,exact=NA,value) {
-            "[[<-"(x@data,i,j,...,exact=exact,value)
-          })
+## ### @exportMethod [[
+## setGeneric("[[")
+## setMethod("[[","pdata",
+##           function(x,i,j,...,exact=NA) {
+##             x@data[[i,j,...,exact=exact]]
+##           })
 
-setMethod("plot",signature(x="pdata",y="missing"), function(x,...){
-    return(plot(x@data, ...))
-}) # end plot phylo4
+## #### @exportMethod [[<-
+## setGeneric("[[<-")
+## setMethod("[[<-","pdata",
+##           function(x,i,j,...,exact=NA,value) {
+##             "[[<-"(x@data,i,j,...,exact=exact,value)
+##           })
+
+## setMethod("plot",signature(x="pdata",y="missing"), function(x,...){
+##     return(plot(x@data, ...))
+## }) # end plot phylo4
 
 
 ## od = data.frame(a=1:3,b=4:6)
@@ -115,7 +122,7 @@ setMethod("plot",signature(x="pdata",y="missing"), function(x,...){
 
 # x <- new("pdata", x=c("a","b", "c", "d", "3"), y=c(1:5))
 #>x[c(2,4)]
-#An object of class “pdata”
+#An object of class pdata
 #Slot "x":
 #[1] "b" "d"
 #
@@ -138,6 +145,5 @@ setMethod("plot",signature(x="pdata",y="missing"), function(x,...){
 
 # this works, but list structure is destroyed
 #> mapply(function(x, i, j, ..., drop=TRUE) x@.Data[i], x, 2)
-#  x   y 
-#"b" "2" 
-
+#  x   y
+#"b" "2"

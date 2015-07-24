@@ -41,8 +41,8 @@ getAllNodesSafe <- function(edge) {
     .Call('phylobase_getAllNodesSafe', PACKAGE = 'phylobase', edge)
 }
 
-getAllNodesFast <- function(edge, rooted) {
-    .Call('phylobase_getAllNodesFast', PACKAGE = 'phylobase', edge, rooted)
+getAllNodesFast <- function(edge) {
+    .Call('phylobase_getAllNodesFast', PACKAGE = 'phylobase', edge)
 }
 
 testEqInt <- function(x, y) {
@@ -75,9 +75,5 @@ edgeIdCpp <- function(edge, type) {
 
 checkTreeCpp <- function(obj, opts) {
     .Call('phylobase_checkTreeCpp', PACKAGE = 'phylobase', obj, opts)
-}
-
-GetNCL <- function(params, paramsVecR) {
-    .Call('phylobase_GetNCL', PACKAGE = 'phylobase', params, paramsVecR)
 }
 
