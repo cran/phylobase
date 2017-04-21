@@ -1,7 +1,7 @@
 Package: phylobase
 Type: Package
 Title: Base Package for Phylogenetic Structures and Comparative Data
-Version: 0.8.2
+Version: 0.8.4
 Imports: ade4, ape (>= 3.0), Rcpp (>= 0.11.0), rncl (>= 0.6.0), grid,
         methods, stats, RNeXML
 LinkingTo: Rcpp
@@ -30,8 +30,8 @@ Collate: 'oldclasses-class.R' 'internal-constructors.R'
         'shortestPath-methods.R' 'subset-methods.R' 'summary-methods.R'
         'tbind.R' 'tdata-methods.R' 'treePlot.R' 'treestruc.R' 'zzz.R'
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2016-01-22 16:13:13 UTC; francois
+Packaged: 2017-04-21 21:15:46 UTC; francois
 Repository: CRAN
-Date/Publication: 2016-01-23 00:32:41
+Date/Publication: 2017-04-21 23:40:13 UTC
