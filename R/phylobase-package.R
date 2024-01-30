@@ -58,7 +58,6 @@
 ##'
 ##' @name phylobase-package
 ##' @aliases phylobase-package phylobase
-##' @docType package
 ##' @section More Info:
 ##' See the help index \code{help(package="phylobase")} and run
 ##' \code{vignette("phylobase", "phylobase")} for further details and
@@ -88,7 +87,7 @@
 ## @exportMethod [<- [[ [[<-
 ## @exportMethod labels labels<- nodeLabels nodeLabels<- tipLabels tipLabels<- edgeLabels edgeLabels<-
 ## @exportMethod hasNodeLabels hasEdgeLabels hasDuplicatedLabels
-NULL
+"_PACKAGE"
 
 
 ##' Data from Darwin's finches

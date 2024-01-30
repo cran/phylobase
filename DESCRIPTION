@@ -1,11 +1,11 @@
 Package: phylobase
 Type: Package
 Title: Base Package for Phylogenetic Structures and Comparative Data
-Version: 0.8.10
+Version: 0.8.12
 Imports: ade4, ape (>= 3.0), Rcpp (>= 0.11.0), rncl (>= 0.6.0), grid,
         methods, stats, RNeXML
 LinkingTo: Rcpp
-Suggests: MASS, testthat (>= 0.8.1), knitr
+Suggests: MASS, testthat (>= 0.8.1), knitr, rmarkdown
 Author: R Hackathon et al. (alphabetically: Ben Bolker, Marguerite Butler,
     Peter Cowan, Damien de Vienne, Dirk Eddelbuettel, Mark Holder, Thibaut
     Jombart, Steve Kembel, Francois Michonneau, David Orme, Brian O'Meara,
@@ -30,9 +30,9 @@ Collate: 'oldclasses-class.R' 'internal-constructors.R'
         'shortestPath-methods.R' 'subset-methods.R' 'summary-methods.R'
         'tbind.R' 'tdata-methods.R' 'treePlot.R' 'treestruc.R' 'zzz.R'
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2.9000
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2020-03-01 07:30:03 UTC; francois
+Packaged: 2024-01-29 16:12:26 UTC; francois
 Repository: CRAN
-Date/Publication: 2020-03-01 08:00:06 UTC
+Date/Publication: 2024-01-30 00:20:03 UTC
